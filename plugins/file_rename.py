@@ -22,9 +22,9 @@ async def rename_start(client, message):
     dcid = FileId.decode(file.file_id).dc_id
 	
     if file.file_size > 2000 * 1024 * 1024:
-         return await message.reply_text("Sᴏʀʀy Bʀᴏ Tʜɪꜱ Bᴏᴛ Iꜱ Dᴏᴇꜱɴ'ᴛ Sᴜᴩᴩᴏʀᴛ Uᴩʟᴏᴀᴅɪɴɢ Fɪʟᴇꜱ Bɪɢɢᴇʀ Tʜᴀɴ 2Gʙ")
+         return await message.reply_text("<i>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</i>")
     await message.reply_text(
-        f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>ᴅᴄ ɪᴅ - <code>{dcid}</code></b>""",
+        f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>""",
         reply_to_message_id=message.id,
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
@@ -46,7 +46,7 @@ async def rename(bot, update):
     chat_id = update.message.chat.id
     id = update.message.reply_to_message_id
     await update.message.delete()
-    await update.message.reply_text(f"__Please enter the new filename...__\n\nNote:- Extension Not Required", reply_to_message_id=id,
+    await update.message.reply_text(f"<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>", reply_to_message_id=id,
                                     reply_markup=ForceReply(True))
     dateupdate(chat_id, date)
 
