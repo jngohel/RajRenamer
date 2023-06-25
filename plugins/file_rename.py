@@ -17,9 +17,22 @@ import os, time
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
     file = getattr(message, message.media.value)
-    filename = file.file_name  
+    filename = file.file_name
+    filesize = file.file_size
+    dcid = file.dc_id
+	
     if file.file_size > 2000 * 1024 * 1024:
          return await message.reply_text("Sᴏʀʀy Bʀᴏ Tʜɪꜱ Bᴏᴛ Iꜱ Dᴏᴇꜱɴ'ᴛ Sᴜᴩᴩᴏʀᴛ Uᴩʟᴏᴀᴅɪɴɢ Fɪʟᴇꜱ Bɪɢɢᴇʀ Tʜᴀɴ 2Gʙ")
+    await message.reply_text(
+        f"""__What do you want me to do with this file?__
+        **File Name**: {filename}
+        **File Size**: {filesize}
+        **Dc ID**: {dcid}""",
+        reply_to_message_id=message.id,
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("📝 Rename", callback_data="rename"),
+              InlineKeyboardButton("✖️ Cancel", callback_data="cancel")]])
+    )
 
     try:
         await message.reply_text(
