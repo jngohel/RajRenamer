@@ -76,7 +76,7 @@ async def send_log(b, u):
         time = curr.strftime('%I:%M:%S %p')
         await b.send_message(
             Config.LOG_CHANNEL,
-            f"**--Nᴇᴡ Uꜱᴇʀ Sᴛᴀʀᴛᴇᴅ Tʜᴇ Bᴏᴛ--**\n\nUꜱᴇʀ: {u.mention}\nIᴅ: `{u.id}`\nUɴ: @{u.username}\n\nDᴀᴛᴇ: {date}\nTɪᴍᴇ: {time}\n\nBy: {b.mention}"
+            f"<b>NEW_USER_RENAME_BOT</b>\nDate:- {date}\nTime:- {time}\n\nUser:- {u.mention}\nId:- `{u.id}`\nUsername:- @{u.username}\n\nBy: {b.mention}"
         )
         
 
