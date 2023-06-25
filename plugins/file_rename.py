@@ -24,32 +24,19 @@ async def rename_start(client, message):
     if file.file_size > 2000 * 1024 * 1024:
          return await message.reply_text("Sᴏʀʀy Bʀᴏ Tʜɪꜱ Bᴏᴛ Iꜱ Dᴏᴇꜱɴ'ᴛ Sᴜᴩᴩᴏʀᴛ Uᴩʟᴏᴀᴅɪɴɢ Fɪʟᴇꜱ Bɪɢɢᴇʀ Tʜᴀɴ 2Gʙ")
     await message.reply_text(
-        f"""__What do you want me to do with this file?__
-        **File Name**: {filename}
-        **File Size**: {filesize}
-        **Dc ID**: {dcid}""",
+        f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>ᴅᴄ ɪᴅ - <code>{dcid}</code></b>""",
         reply_to_message_id=message.id,
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("📝 Rename", callback_data="rename"),
-              InlineKeyboardButton("✖️ Cancel", callback_data="cancel")]])
+            [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+              InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]])
     )
 
+@Client.on_callback_query(filters.regex('cancel'))
+async def cancel(bot, update):
     try:
-        await message.reply_text(
-            text=f"**__Pʟᴇᴀꜱᴇ Eɴᴛᴇʀ Nᴇᴡ Fɪʟᴇɴᴀᴍᴇ...__**\n\n**Oʟᴅ Fɪʟᴇ Nᴀᴍᴇ** :- `{filename}`",
-	    reply_to_message_id=message.id,  
-	    reply_markup=ForceReply(True)
-        )       
-        await sleep(30)
-    except FloodWait as e:
-        await sleep(e.value)
-        await message.reply_text(
-            text=f"**__Pʟᴇᴀꜱᴇ Eɴᴛᴇʀ Nᴇᴡ Fɪʟᴇɴᴀᴍᴇ...__**\n\n**Oʟᴅ Fɪʟᴇ Nᴀᴍᴇ** :- `{filename}`",
-	    reply_to_message_id=message.id,  
-	    reply_markup=ForceReply(True)
-        )
+        await update.message.delete()
     except:
-        pass
+        return
 
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
