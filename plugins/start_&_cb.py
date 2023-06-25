@@ -8,14 +8,13 @@ from config import Config, Txt
 @Client.on_message(filters.private & filters.command("start"))
 async def start(client, message):
     user = message.from_user
-    await db.add_user(client, message)                
+    await db.add_user(client, message)   
+  
     button = InlineKeyboardMarkup([[
         InlineKeyboardButton('ᴜᴘᴅᴀᴛᴇ', url='https://t.me/Imdb_updates'),
         InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help')
     ]])
-        await message.reply_text(text=Txt.START_TXT, reply_markup=button)       
-    else:
-        await message.reply_text(text=Txt.START_TXT, reply_markup=button, disable_web_page_preview=True)
+    await message.reply_text(text=Txt.START_TXT, reply_markup=button, disable_web_page_preview=True)
    
 
 @Client.on_callback_query()
