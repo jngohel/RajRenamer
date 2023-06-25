@@ -51,6 +51,18 @@ async def rename_start(client, message):
     except:
         pass
 
+@Client.on_callback_query(filters.regex('rename'))
+async def rename(bot, update):
+    date_fa = str(update.message.date)
+    pattern = '%Y-%m-%d %H:%M:%S'
+    date = int(time.mktime(time.strptime(date_fa, pattern)))
+    chat_id = update.message.chat.id
+    id = update.message.reply_to_message_id
+    await update.message.delete()
+    await update.message.reply_text(f"__Please enter the new filename...__\n\nNote:- Extension Not Required", reply_to_message_id=id,
+                                    reply_markup=ForceReply(True))
+    dateupdate(chat_id, date)
+
 
 
 @Client.on_message(filters.private & filters.reply)
