@@ -17,7 +17,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Telegram Link : https://t.me/PYRO_BOTZ 
 Repo Link : https://github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT
-License Link : 
+License Link : https://github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT/blob/main/LICENSE
+"""
 
 import re, os, time
 
@@ -70,7 +71,6 @@ Sᴇɴᴅ Aɴy Fɪʟᴇ Aɴᴅ Tyᴩᴇ Nᴇᴡ Fɪʟᴇ Nɴᴀᴍᴇ \nAɴᴅ A
 
 
     PROGRESS_BAR = """\n
-╭━━━━❰ᴘʀᴏɢʀᴇss ʙᴀʀ❱━➣
 sɪᴢᴇ - {1} | {2}
 ᴅᴏɴᴇ - {0}%
 sᴘᴇᴇᴅ - {3}/s
