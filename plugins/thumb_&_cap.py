@@ -1,7 +1,7 @@
 from pyrogram import Client, filters 
 from helper.database import db
 import os
-ADMIN = int(os.environ.get("ADMIN", '1030335104'))
+from config import Config
 
 @Client.on_message(filters.private & filters.command('set_caption'))
 async def add_caption(client, message):
@@ -47,7 +47,7 @@ async def addthumbs(client, message):
     await db.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
 
 
-@Client.on_message(filters.command('send'))
+@Client.on_message(filters.command('send') & filters.user(Config.ADMIN))
 async def send_msg(bot, message):
     if message.from_user.id not in ADMIN:
         await message.reply('ᴏɴʟʏ ᴛʜᴇ ʙᴏᴛ ᴏᴡɴᴇʀ ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ... 😑')
