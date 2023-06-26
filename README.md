@@ -1,17 +1,15 @@
 # 𝐏𝐘𝐑𝐎 𝐑𝐄𝐍𝐀𝐌𝐄 𝐁𝐎𝐓
 
 
-
-![github card](https://github-readme-stats.vercel.app/api/pin/?username=TEAM-PYRO-BOTZ&repo=PYRO-RENAME-BOT&theme=dark)
-
-
-
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT&env[BOT_TOKEN]&env[API_ID]&env[API_HASH]&env[WEBHOOK]=True&env[ADMIN]&env[DB_URL]&env[DB_NAME]=pyro-botz&env[FORCE_SUB]&env[START_PIC]&env[LOG_CHANNEL]=You%20Dont%20Need%20LogChannel%20To%20Remove%20This%20Variable&run_command=python%20bot.py&branch=main&name=pyro-rename) 
+
                  
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT)
 
+
 <a href="https://graph.org/file/fabd75cd5043d2cfdc13d.jpg"><img src="https://railway.app/button.svg" alt="Deploy"></a>
+
 
 <a href="https://heroku.com/deploy?template=https://github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy"></a>
 
