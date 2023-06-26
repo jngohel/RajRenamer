@@ -31,7 +31,7 @@ class Bot(Client):
             await web.TCPSite(app, "0.0.0.0", 8080).start()     
         print(f"<b>{me.first_name} is restarted ✅</b>")
         for id in Config.ADMIN:
-            try: await self.send_message(id, f"<b>{me.first_name} is restarted ✅</b>")                                
+            try: await self.send_message(id, f"<b>{me.mention} is restarted ✅</b>")                                
             except: pass
         if Config.LOG_CHANNEL:
             try:
