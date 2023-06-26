@@ -1,4 +1,5 @@
 from pyrogram import Client, filters 
+from bot import Bot
 from helper.database import db
 import os
 ADMIN = int(os.environ.get("ADMIN", '1030335104'))
