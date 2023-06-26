@@ -1,6 +1,5 @@
 from pyrogram import Client, filters 
 from helper.database import db
-from config import Config
 
 @Client.on_message(filters.private & filters.command('set_caption'))
 async def add_caption(client, message):
@@ -44,32 +43,6 @@ async def removethumb(client, message):
 async def addthumbs(client, message):
     await message.reply_text("<b>ʏᴏᴜʀ ᴛʜᴜᴍʙɴᴀɪʟ sᴇᴛ sᴜᴄᴄᴇssꜰᴜʟʟʏ 🥳\n\nsᴇɴᴅ /view_thumb ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴅᴅᴇᴅ ᴛʜᴜᴍʙɴᴀɪʟ</b>")
     await db.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
-
-
-@Client.on_message(filters.command('send') & filters.user(Config.ADMIN))
-async def send_msg(bot, Client, m, message):
-    if message.from_user.id not in ADMIN:
-        await message.reply('ᴏɴʟʏ ᴛʜᴇ ʙᴏᴛ ᴏᴡɴᴇʀ ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ... 😑')
-        return
-    if not message.reply_to_message:
-        return await message.reply('reply to any msg')
-    
-    try:
-        _id = message.text.split(" ", 1)[1]
-    except:
-        return await message.reply_text("give user id!")
-    
-    try:
-        user = await bot.get_users(_id)
-    except Exception as e:
-        return await message.reply_text(f"error: {e}")
-        
-    try:
-        await message.reply_to_message.forward(int(user.id))
-        await message.reply_text(f'sent to {user.mention}')
-    except Exception as e:
-        await message.reply_text(f"error: {e}")
-
 
 
 
