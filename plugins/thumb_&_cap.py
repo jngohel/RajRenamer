@@ -1,6 +1,6 @@
 from pyrogram import Client, filters 
 from helper.database import db
-from config import Config, ADMIN
+from config import Config
 
 @Client.on_message(filters.private & filters.command('set_caption'))
 async def add_caption(client, message):
@@ -47,7 +47,7 @@ async def addthumbs(client, message):
 
 
 @Client.on_message(filters.command('send') & filters.user(Config.ADMIN))
-async def send_msg(bot, message):
+async def send_msg(bot, Client, m, message):
     if message.from_user.id not in ADMIN:
         await message.reply('ᴏɴʟʏ ᴛʜᴇ ʙᴏᴛ ᴏᴡɴᴇʀ ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ... 😑')
         return
