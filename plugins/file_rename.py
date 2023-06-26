@@ -28,7 +28,7 @@ async def rename_start(client, message):
     except FloodWait as e:
         await sleep(e.value)
         text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nꜰɪʟᴇ ɪᴅ - <code>{fileid}</code></b>"""
-	buttons = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+        buttons = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
 		    InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
         await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
     except:
