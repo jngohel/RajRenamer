@@ -1,5 +1,4 @@
 from pyrogram import Client, filters 
-from bot import Bot
 from helper.database import db
 import os
 ADMIN = int(os.environ.get("ADMIN", '1030335104'))
@@ -49,7 +48,7 @@ async def addthumbs(client, message):
 
 
 @Client.on_message(filters.command('send'))
-async def send_msg(bot: Bot, message: Message):
+async def send_msg(bot, message):
     if message.from_user.id not in ADMIN:
         await message.reply('ᴏɴʟʏ ᴛʜᴇ ʙᴏᴛ ᴏᴡɴᴇʀ ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ... 😑')
         return
