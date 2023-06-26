@@ -47,7 +47,7 @@ async def addthumbs(client, message):
     await db.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
 
 
-@Bot.on_message(filters.command('send'))
+@Client.on_message(filters.command('send'))
 async def send_msg(bot: Bot, message: Message):
     if message.from_user.id not in ADMIN:
         await message.reply('ᴏɴʟʏ ᴛʜᴇ ʙᴏᴛ ᴏᴡɴᴇʀ ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ... 😑')
