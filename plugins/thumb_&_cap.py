@@ -1,6 +1,6 @@
 from pyrogram import Client, filters 
 from helper.database import db
-from config import Config, ADMIN
+ADMIN = int(os.environ.get("ADMIN", 1030335104))
 
 @Client.on_message(filters.private & filters.command('set_caption'))
 async def add_caption(client, message):
