@@ -11,7 +11,6 @@ from helper.database import db
 from asyncio import sleep
 from PIL import Image
 import os, time
-from config import FLOOD
 
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
@@ -25,7 +24,7 @@ async def rename_start(client, message):
         buttons = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
 		    InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
         await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-        await sleep(FLOOD)
+        await sleep(30)
     except FloodWait as e:
         await sleep(e.value)
         text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nꜰɪʟᴇ ɪᴅ - <code>{fileid}</code></b>"""
