@@ -19,6 +19,8 @@ async def rename_start(client, message):
     filename = file.file_name
     filesize = humanize.naturalsize(file.file_size) 
     dcid = FileId.decode(file.file_id).dc_id
+    if file.file_size > 2000 * 1024 * 1024:
+         return await message.reply_text("<b>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</b>")
     try:
         text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
         buttons = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
