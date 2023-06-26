@@ -2,13 +2,12 @@ from pyrogram import Client, filters
 from pyrogram.enums import MessageMediaType
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
-from pyrogram.file_id import FileId
+from config import FLOOD
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 import humanize
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from helper.database import db
-
 from asyncio import sleep
 from PIL import Image
 import os, time
@@ -18,18 +17,32 @@ import os, time
 async def rename_start(client, message):
     file = getattr(message, message.media.value)
     filename = file.file_name
-    filesize = humanize.naturalsize(file.file_size)
-    dcid = FileId.decode(file.file_id).dc_id
+    filesize = humanize.naturalsize(file.file_size) 
+    fileid = file.file_id
+    try:
+        text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{fileid}</code></b>"""
+	buttos = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+                   InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
+        await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+        await sleep(FLOOD)
+    except FloodWait as e:
+        await sleep(e.value)
+        text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{fileid}</code></b>"""
+	buttos = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+                   InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
+        await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+    except:
+        pass
+
+@Client.on_callback_query(filters.regex('rename'))
+async def rename(bot,update):
+	user_id = update.message.chat.id
+	date = update.message.date
+	await update.message.delete()
+	await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
+	reply_to_message_id=update.message.reply_to_message.id,  
+	reply_markup=ForceReply(True))
 	
-    if file.file_size > 2000 * 1024 * 1024:
-         return await message.reply_text("<i>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</i>")
-    await message.reply_text(
-        f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>""",
-        reply_to_message_id=message.id,
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
-              InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]])
-    )
 
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot, update):
@@ -37,19 +50,6 @@ async def cancel(bot, update):
         await update.message.delete()
     except:
         return
-
-@Client.on_callback_query(filters.regex('rename'))
-async def rename(bot, update):
-    date_fa = str(update.message.date)
-    pattern = '%Y-%m-%d %H:%M:%S'
-    date = int(time.mktime(time.strptime(date_fa, pattern)))
-    chat_id = update.message.chat.id
-    id = update.message.reply_to_message_id
-    await update.message.delete()
-    await update.message.reply_text(f"<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>", reply_to_message_id=id,
-                                    reply_markup=ForceReply(True))
-    dateupdate(chat_id, date)
-
 
 
 @Client.on_message(filters.private & filters.reply)
