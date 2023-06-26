@@ -42,7 +42,7 @@ class Config(object):
 
     # wes response configuration     
     WEBHOOK = bool(os.environ.get("WEBHOOK", True))
-
+    FLOOD = int(os.environ.get("FLOOD", "10"))
 
 
 class Txt(object):
