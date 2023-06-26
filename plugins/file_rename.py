@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.enums import MessageMediaType
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
-from config import FLOOD
+
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 import humanize
@@ -11,6 +11,7 @@ from helper.database import db
 from asyncio import sleep
 from PIL import Image
 import os, time
+from config import FLOOD
 
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
