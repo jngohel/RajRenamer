@@ -26,19 +26,19 @@ id_pattern = re.compile(r'^.\d+$')
 
 class Config(object):
     # pyro client config
-    API_ID    = os.environ.get("API_ID", "")
-    API_HASH  = os.environ.get("API_HASH", "")
-    BOT_TOKEN = os.environ.get("BOT_TOKEN", "") 
+    API_ID    = os.environ.get("API_ID", "24781773")
+    API_HASH  = os.environ.get("API_HASH", "ad907569f68cab06c733794fc91be7b6")
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", "6210624556:AAFrgq8aU6inlrQoqeatdUqrcktEhYezeek") 
    
     # database config
-    DB_NAME = os.environ.get("DB_NAME","pyro-botz")     
-    DB_URL  = os.environ.get("DB_URL","")
+    DB_NAME = os.environ.get("DB_NAME","renameaks2")     
+    DB_URL  = os.environ.get("DB_URL","mongodb+srv://technicalaks77:technicalaks7777@cluster0.51wmuvb.mongodb.net/?retryWrites=true&w=majority")
  
     # other configs
     BOT_UPTIME  = time.time()
     ADMIN       = [int(admin) if id_pattern.search(admin) else admin for admin in os.environ.get('ADMIN', '').split()]
-    FORCE_SUB   = os.environ.get("FORCE_SUB", "") 
-    LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", None))
+    FORCE_SUB   = os.environ.get("FORCE_SUB", "Aksbackup") 
+    LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001769642119"))
 
     # wes response configuration     
     WEBHOOK = bool(os.environ.get("WEBHOOK", True))
