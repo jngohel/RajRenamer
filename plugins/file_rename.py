@@ -35,7 +35,7 @@ async def rename_start(client, message):
 	    	        InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
             await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
         except:
-            pass
+	    pass
     else:
 	await message.reply_text(text="only for paid users")
 
