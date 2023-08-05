@@ -8,6 +8,7 @@ class Database:
         self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
         self.db = self._client[database_name]
         self.col = self.db.user
+        self.users = self.db.uersz
 
     def new_user(self, id):
         return dict(
@@ -51,6 +52,26 @@ class Database:
     async def get_caption(self, id):
         user = await self.col.find_one({'_id': int(id)})
         return user.get('caption', None)
+
+        async def update_user(self, user_data):
+        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+
+    async def has_premium_access(self, user_id):
+        user_data = await self.get_user(user_id)
+        if user_data:
+            expiry_time = user_data.get("expiry_time")
+            if expiry_time is None:
+                # User previously used the free trial, but it has ended.
+                return False
+            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                return True
+            else:
+                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+        return False
+    
+    async def update_user(self, user_data):
+        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+
 
 
 db = Database(Config.DB_URL, Config.DB_NAME)
