@@ -15,7 +15,7 @@ import os, time
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
-    if await db.has_premium_access(user_id):
+    if await db.has_premium_access(userid):
         file = getattr(message, message.media.value)
         filename = file.file_name
         filesize = humanize.naturalsize(file.file_size) 
