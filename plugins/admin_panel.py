@@ -96,7 +96,7 @@ async def send_msg(user_id, message):
         return 500
  # Add premium
 
-@Client.on_message(filters.command("add_premium") & filters.user(Config.ADMINS))
+@Client.on_message(filters.command("add_premium") & filters.user(Config.ADMIN))
 async def give_premium_cmd_handler(client, message):
     if len(message.command) == 3:
         user_id = int(message.command[1])  # Convert the user_id to integer
