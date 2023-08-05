@@ -33,9 +33,7 @@ async def rename_start(client, message):
             buttons = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
 	    	        InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
             await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-        else:
-	    await message.reply(text="only for paid users")
-		
+
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
 	user_id = update.message.chat.id
