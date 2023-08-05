@@ -96,7 +96,7 @@ async def send_msg(user_id, message):
         return 500
  # Add premium
 
-@Client.on_message(filters.command("add_premium") & filters.user(ADMINS))
+@Client.on_message(filters.command("add_premium") & filters.user(Config.ADMINS))
 async def give_premium_cmd_handler(client, message):
     if len(message.command) == 3:
         user_id = int(message.command[1])  # Convert the user_id to integer
@@ -115,4 +115,10 @@ async def give_premium_cmd_handler(client, message):
             await message.reply_text("Invalid time format. Please use '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year'")
     else:
         await message.reply_text("Usage: /add_premium user_id time (e.g., '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year')")
+
+
+
+
+
+
         
