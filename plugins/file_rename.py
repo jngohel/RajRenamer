@@ -38,8 +38,7 @@ async def rename_start(client, message):
             pass
     
     else:
-	text =f"only for paid users"
-	await message.reply_text(text=text)
+	await message.reply_text(text="only for paid users")
 
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot,update):
