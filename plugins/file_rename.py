@@ -15,8 +15,8 @@ import os, time
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
-    user_id = message.from_user.id
-    if await db.has_premium_access(user_id):
+    userid = message.from_user.id
+    if await db.has_premium_access(userid):
         file = getattr(message, message.media.value)
         filename = file.file_name
         filesize = humanize.naturalsize(file.file_size) 
@@ -30,10 +30,16 @@ async def rename_start(client, message):
             await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
             await sleep(30)
         except FloodWait as e:
+            await sleep(e.value)
             text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
             buttons = [[InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
 	    	        InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]]
             await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+        except:
+            pass
+    
+    else:
+	await message.reply_text(text="only for paid users")
 
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
