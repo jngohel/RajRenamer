@@ -102,7 +102,7 @@ async def give_premium_cmd_handler(client, message):
     if len(message.command) == 3:
         user_id = int(message.command[1])  # Convert the user_id to integer
         time = message.command[2]
-        aks = user_id.mention
+        aks = user.mention
         seconds = await get_seconds(time)
         if seconds > 0:
             expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
