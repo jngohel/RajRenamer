@@ -44,7 +44,7 @@ async def rename_start(client, message):
         content = message.text if message.text else "Media file"
         user = message.from_user.first_name
         user_id = message.from_user.id
-        await client.send_message(
+        await bot.send_message(
             chat_id=Config.LOG_CHANNEL,
             text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {content}</b>"
         )
