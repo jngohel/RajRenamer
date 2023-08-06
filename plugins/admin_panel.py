@@ -100,7 +100,6 @@ async def send_msg(user_id, message):
 @Client.on_message(filters.command("give_premium") & filters.user(Config.ADMIN))
 async def give_premium_cmd_handler(client, message):
     if len(message.command) == 3:
-        aks = message.reply_to_message
         user_id = int(message.command[1])  # Convert the user_id to integer
         time = message.command[2]
         seconds = await get_seconds(time)
@@ -108,7 +107,7 @@ async def give_premium_cmd_handler(client, message):
             expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
             user_data = {"id": user_id, "expiry_time": expiry_time}  # Using "id" instead of "user_id"
             await db.update_user(user_data)  # Use the update_user method to update or insert user data
-            await message.reply_text(f"<i>📑 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ᴀᴅᴅᴇᴅ ᴛᴏ ᴜsᴇʀ\n\nɪᴅ - {aks}</i>")
+            await message.reply_text(f"<i>📑 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ᴀᴅᴅᴇᴅ ᴛᴏ ᴜsᴇʀ\n\nɪᴅ - {user_id}</i>")
             await client.send_message(
                 chat_id=user_id,
                 text=f"<i>ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ᴀᴄᴄᴏᴜɴᴛ ꜰᴏʀ {time} ᴇɴᴊᴏʏ 😀</i>",                
