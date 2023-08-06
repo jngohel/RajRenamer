@@ -15,8 +15,8 @@ import os, time
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
-        userid = message.from_user.id
-	if await db.has_premium_access(userid):
+    userid = message.from_user.id
+    if await db.has_premium_access(userid):
         file = getattr(message, message.media.value)
         filename = file.file_name
         filesize = humanize.naturalsize(file.file_size) 
@@ -37,8 +37,8 @@ async def rename_start(client, message):
             await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
         except:
             pass
-	else:
-	    await message.reply_text(text="only for paid users")
+    else:
+	await message.reply_text(text="only for paid users")
     		
         
         
