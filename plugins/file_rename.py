@@ -41,7 +41,7 @@ async def rename_start(client, message):
             ]
             await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
     else:
-        content = message.text if message.text else "Media file"
+        content = message.text
         user = message.from_user.first_name
         user_id = message.from_user.id
         await client.send_message(
