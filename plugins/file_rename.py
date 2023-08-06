@@ -1,22 +1,22 @@
-from pyrogram import Client, filters
-from pyrogram.enums import MessageMediaType
-from pyrogram.errors import FloodWait
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
-from pyrogram.file_id import FileId
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
-import humanize
-from helper.utils import progress_for_pyrogram, convert, humanbytes
-from helper.database import db
-from asyncio import sleep
-from PIL import Image
 import os, time
+import humanize
+from PIL import Image
+from asyncio import sleep
+from helper.database import db
+from pyrogram.file_id import FileId
+from pyrogram import Client, filters
+from pyrogram.errors import FloodWait
+from hachoir.parser import createParser
+from pyrogram.enums import MessageMediaType
+from hachoir.metadata import extractMetadata
+from helper.utils import progress_for_pyrogram, convert, humanbytes
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
-    userid = message.from_user.id
-    if await db.has_premium_access(userid):
+    aksid = message.from_user.id
+    if await db.has_premium_access(aksid):
         file = getattr(message, message.media.value)
         filename = file.file_name
         filesize = humanize.naturalsize(file.file_size) 
