@@ -17,7 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_text(bot, message):
     aksid = message.from_user.id
-    if await db.has_premium_access(aksid):
+    if await not db.has_premium_access(aksid): return
         content = message.text
         user = message.from_user.first_name
         user_id = message.from_user.id
