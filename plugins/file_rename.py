@@ -18,28 +18,29 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 async def rename_start(client, message):
     aksid = message.from_user.id
     if await db.has_premium_access(aksid):
-        file = getattr(message, message.media.value)
-        filename = file.file_name
-        filesize = humanize.naturalsize(file.file_size) 
-        dcid = FileId.decode(file.file_id).dc_id
-        if file.file_size > 2000 * 1024 * 1024:
-            return await message.reply_text("<b>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</b>")
-        try:
-            text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
-            buttons = [
-                [InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
-                 InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
-            ]
-            await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-            await sleep(30)
-        except FloodWait as e:
-            await sleep(e.value)
-            text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
-            buttons = [
-                [InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
-                 InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
-            ]
-            await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+        if message.media:
+            file = getattr(message, message.media.value)
+            filename = file.file_name
+            filesize = humanize.naturalsize(file.file_size)
+            dcid = FileId.decode(file.file_id).dc_id
+            if file.file_size > 2000 * 1024 * 1024:
+                return await message.reply_text("<b>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</b>")
+            try:
+                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
+                buttons = [
+                    [InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+                     InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
+                ]
+                await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+                await sleep(30)
+            except FloodWait as e:
+                await sleep(e.value)
+                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
+                buttons = [
+                    [InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+                     InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
+                ]
+                await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
     else:
         content = message.text
         user = message.from_user.first_name
