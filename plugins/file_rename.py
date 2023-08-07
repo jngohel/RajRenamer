@@ -45,8 +45,8 @@ async def rename_start(client, message):
         if message.media:
             file = getattr(message, message.media.value)
             ak = file.file_name
-	else:
-	    ak = None
+        else:
+            ak = None
         content = message.text
         aks = message.from_user.mention
         user_id = message.from_user.id
