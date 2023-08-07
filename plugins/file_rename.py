@@ -14,10 +14,6 @@ from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 
-from pyrogram import Client, filters, InlineKeyboardMarkup, InlineKeyboardButton
-import humanize
-import asyncio
-
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
     aksid = message.from_user.id
