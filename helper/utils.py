@@ -1,5 +1,5 @@
 import math, time
-from helper.database import db
+from database import db
 from datetime import datetime
 from pytz import timezone
 from config import Config, Txt 
