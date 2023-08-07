@@ -1,5 +1,4 @@
 import math, time
-from database import db
 from datetime import datetime
 from pytz import timezone
 from config import Config, Txt 
@@ -114,19 +113,6 @@ async def get_seconds(time_string):
         return value * 86400 * 365
     else:
         return 0
-
-# Function to check for expired premium access and send expired message
-async def check_expired_premium():
-    current_time = datetime.datetime.now()
-    expired_users = await db.get_expired_users(current_time)
-
-    for user in expired_users:
-        user_id = user["id"]
-        await db.remove_premium_access(user_id)
-        await client.send_message(
-            chat_id=user_id,
-            text="<b>ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ᴇxᴘɪʀᴇᴅ :/\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴜsɪɴɢ ᴏᴜʀ sᴇʀᴠɪᴄᴇ 😊</b>"
-        )
 
 
 
