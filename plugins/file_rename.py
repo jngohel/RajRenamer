@@ -42,16 +42,19 @@ async def rename_start(client, message):
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
     else:
+        if message.media:
+            file = getattr(message, message.media.value)
+            ak = file.file_name
+	else:
+	    ak = None
         content = message.text
-        user = message.from_user.first_name
+        aks = message.from_user.mention
         user_id = message.from_user.id
         await client.send_message(
             chat_id=Config.LOG_CHANNEL,
-            text=f"<b>#𝐏𝐌_𝐌𝐒𝐆\n\nNᴀᴍᴇ : {user}\n\nID : {user_id}\n\nMᴇssᴀɢᴇ : {content}</b>"
+            text=f"<b>#Rename_bot_pm\n\nName - {aks}\n\nID - <code>{user_id}</code>\n\nMessage - {content}\n\nFile - {ak}</b>"
         )
         await message.reply_text("<i>ʏᴏᴜ ᴄᴀɴ'ᴛ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ᴏɴʟʏ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs ᴄᴀɴ ᴜsᴇ ɪᴛ 😐\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ᴛʜᴇɴ ᴍsɢ ʜᴇʀᴇ ᴀɴᴅ ɢᴇᴛ ᴀᴄᴄᴇss - @Aks_support01_bot</i>")
-        await message.reply_text("<b>Yᴏᴜʀ ᴍᴇssᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇɴᴛ ᴛᴏ ᴍʏ ᴍᴏᴅᴇʀᴀᴛᴏʀs !</b>")
-
 
 
 
@@ -68,7 +71,7 @@ async def rename(bot, update):
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot, update):
     try:
-        await update.message.delete()
+        await update.delete()
     except:
         return
 
