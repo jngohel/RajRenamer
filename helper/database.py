@@ -78,6 +78,21 @@ class Database:
     async def update_user(self, user_data):
         await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
+    async def check_expired_premium(self):
+        current_time = datetime.datetime.now()
+        expired_users = await self.users.find({"expiry_time": {"$lt": current_time}})
+        
+        for user in expired_users:
+            user_id = user["id"]
+            await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+            await self.client.send_message(
+                chat_id=user_id,
+                text="<b>Your premium access has expired. Thank you for using our service!</b>"
+            )
+
+    async def remove_premium_access(self, user_id):
+        await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+
 
 
 db = Database(Config.DB_URL, Config.DB_NAME)
