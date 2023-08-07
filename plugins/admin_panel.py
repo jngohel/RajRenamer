@@ -118,19 +118,6 @@ async def give_premium_cmd_handler(client, message):
         await message.reply_text("Usage: /give_premium user_id time (e.g., '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year')")
 
 
-# Function to check for expired premium access and send expired message
-async def check_expired_premium():
-    current_time = datetime.datetime.now()
-    expired_users = await db.get_expired_users(current_time)
-
-    for user in expired_users:
-        user_id = user["id"]
-        await db.remove_premium_access(user_id)
-        await client.send_message(
-            chat_id=user_id,
-            text="<b>ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ᴇxᴘɪʀᴇᴅ :/\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴜsɪɴɢ ᴏᴜʀ sᴇʀᴠɪᴄᴇ 😊</b>"
-        )
-
 
 
 
