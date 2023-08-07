@@ -47,7 +47,7 @@ async def rename_start(client, message):
             ak = file.file_name
         else:
             ak = None
-        content = message.text
+        content = message.text if message.text else None
         aks = message.from_user.mention
         user_id = message.from_user.id
         await client.send_message(
@@ -71,7 +71,7 @@ async def rename(bot, update):
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot, update):
     try:
-        await update.delete()
+        await update.message.delete()
     except:
         return
 
