@@ -14,6 +14,10 @@ from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 
+from pyrogram import Client, filters, InlineKeyboardMarkup, InlineKeyboardButton
+import humanize
+import asyncio
+
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
     aksid = message.from_user.id
@@ -32,9 +36,9 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-                await sleep(30)
+                await asyncio.sleep(30)
             except FloodWait as e:
-                await sleep(e.value)
+                await asyncio.sleep(e.value)
                 text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
                 buttons = [
                     [InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
@@ -47,17 +51,15 @@ async def rename_start(client, message):
             ak = file.file_name
         else:
             ak = None
-        content = message.text if message.text else None
-        aks = message.from_user.mention
-        user_id = message.from_user.id
-        
-        # Log both media files and text messages
-        await client.send_message(
-            chat_id=Config.LOG_CHANNEL,
-            text=f"<b>#Rename_bot_pm\n\nName - {aks}\n\nID - <code>{user_id}</code>\n\nMessage - {content}\n\nFile - {ak}</b>"
-        )
-        
-        await message.reply_text("<i>ʏᴏᴜ ᴄᴀɴ'ᴛ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ᴏɴʟʏ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs ᴄᴀɴ ᴜsᴇ ɪᴛ 😐\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ᴛʜᴇɴ ᴍsɢ ʜᴇʀᴇ ᴀɴᴅ ɢᴇᴛ ᴀᴄᴄᴇss - @Aks_support01_bot</i>")
+        if message.text:
+            content = message.text
+            aks = message.from_user.mention
+            user_id = message.from_user.id
+            await client.send_message(
+                chat_id=Config.LOG_CHANNEL,
+                text=f"<b>#Rename_bot_pm\n\nName - {aks}\n\nID - <code>{user_id}</code>\n\nMessage - {content}\n\nFile - {ak}</b>"
+            )
+            await message.reply_text("<i>ʏᴏᴜ ᴄᴀɴ'ᴛ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ᴏɴʟʏ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs ᴄᴀɴ ᴜsᴇ ɪᴛ 😐\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ᴛʜᴇɴ ᴍsɢ ʜᴇʀᴇ ᴀɴᴅ ɢᴇᴛ ᴀᴄᴄᴇss - @Aks_support01_bot</i>")
 
 
 
