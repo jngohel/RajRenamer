@@ -80,7 +80,7 @@ class Database:
 
     async def check_expired_premium(self):
         current_time = datetime.datetime.now()
-        expired_users = await self.users.find({"expiry_time": {"$lt": current_time}})
+        expired_users = await self.get_user({"expiry_time": {"$lt": current_time}})
         
         for user in expired_users:
             user_id = user["id"]
