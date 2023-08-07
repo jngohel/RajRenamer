@@ -29,7 +29,7 @@ class Bot(Client):
             app = web.AppRunner(await web_server())
             await app.setup()       
             await web.TCPSite(app, "0.0.0.0", 8080).start()     
-        print(f"<b>{me.first_name} is restarted ✅</b>")
+        print("bot restarted successfully ✅")
         for id in Config.ADMIN:
             try: await self.send_message(id, f"<b>{me.mention} is restarted ✅</b>")                                
             except: pass
@@ -43,3 +43,12 @@ class Bot(Client):
                 print("Pʟᴇᴀꜱᴇ Mᴀᴋᴇ Tʜɪꜱ Iꜱ Aᴅᴍɪɴ Iɴ Yᴏᴜʀ Lᴏɢ Cʜᴀɴɴᴇʟ")
 
 Bot().run()
+
+
+
+
+
+
+
+
+
