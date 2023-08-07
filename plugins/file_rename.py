@@ -41,6 +41,16 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+        else:
+            content = message.text
+            aks = message.from_user.mention
+            user_id = message.from_user.id
+            await client.send_message(
+                chat_id=Config.LOG_CHANNEL,
+                text=f"<b>#Rename_bot_pm\n\nName - {aks}\n\nID - <code>{user_id}</code>\n\nMessage - {content}</b>"
+            )
+            await message.reply_text("Your message has been logged.")
+
     else:
         if message.media:
             file = getattr(message, message.media.value)
