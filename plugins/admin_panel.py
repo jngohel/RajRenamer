@@ -107,7 +107,7 @@ async def give_premium_cmd_handler(client, message):
             expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
             user_data = {"id": user_id, "expiry_time": expiry_time}  # Using "id" instead of "user_id"
             await db.update_user(user_data)  # Use the update_user method to update or insert user data
-            await message.reply_text(f"<i>📑 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ᴀᴅᴅᴇᴅ ᴛᴏ href='tg://user?id={user_id}'>{user_id['name']}</a>\n\nɪᴅ - <code>{user_id}</code>\nᴛɪᴍᴇ - <code>{time}</code></i>")
+            await message.reply_text(f"<i>📑 ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ᴀᴅᴅᴇᴅ ᴛᴏ ᴜsᴇʀ\n\nɪᴅ - <code>{user_id}</code>\nᴛɪᴍᴇ - <code>{time}</code></i>")
             await client.send_message(
                 chat_id=user_id,
                 text=f"<i>ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ᴀᴄᴄᴏᴜɴᴛ ꜰᴏʀ {time} ᴇɴᴊᴏʏ 😀</i>",                
