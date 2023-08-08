@@ -46,3 +46,11 @@ async def addthumbs(client, message):
 
 
 
+
+
+
+
+
+
+
+
