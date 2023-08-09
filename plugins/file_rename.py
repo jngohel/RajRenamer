@@ -63,8 +63,8 @@ async def rename(bot, update):
 	aks = update.from_user.mention
 	file = getattr(message, message.media.value)
 	filename = file.file_name
-        filesize = humanize.naturalsize(file.file_size)
-        dcid = FileId.decode(file.file_id).dc_id
+	filesize = humanize.naturalsize(file.file_size)
+	dcid = FileId.decode(file.file_id).dc_id
 	user_id = update.message.chat.id
 	date = update.message.date
 	await update.message.delete()
