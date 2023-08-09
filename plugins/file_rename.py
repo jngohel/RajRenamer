@@ -61,7 +61,7 @@ async def rename_start(client, message):
 async def rename(bot, update):
 	aksid = update.from_user.id
 	aks = update.from_user.mention
-	file = getattr(update, message.media.value)
+	file = getattr(update, update.media.value)
 	filename = file.file_name
 	filesize = humanize.naturalsize(file.file_size)
 	dcid = FileId.decode(file.file_id).dc_id
