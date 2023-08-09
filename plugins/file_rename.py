@@ -13,17 +13,6 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
-
-from telethon.sync import TelegramClient, events
-from telethon.tl.custom import InlineKeyboardButton, InlineKeyboardMarkup
-from telethon.tl.types import InputMediaDocument
-from telethon.errors.rpcerrorlist import FloodWait
-import humanize
-from time import sleep
-from telethon.tl.functions.upload import GetFile
-
-# Assuming you have the necessary imports and setup for your TelegramClient and Config
-
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
     aksid = message.from_user.id
