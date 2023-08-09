@@ -59,8 +59,8 @@ async def rename_start(client, message):
 
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
-        aksid = update.from_user.id
-	aks = update.from_user.mention
+        aksid = message.from_user.id
+	aks = message.from_user.mention
 	file = getattr(message, message.media.value)
 	filename = file.file_name
         filesize = humanize.naturalsize(file.file_size)
