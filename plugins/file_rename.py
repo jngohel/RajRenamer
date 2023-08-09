@@ -59,23 +59,27 @@ async def rename_start(client, message):
 
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
-	aksid = update.from_user.id
-	aks = update.from_user.mention
-	file = getattr(update, update.media.value)
-	filename = file.file_name
-	filesize = humanize.naturalsize(file.file_size)
-	dcid = FileId.decode(file.file_id).dc_id
-	user_id = update.message.chat.id
-	date = update.message.date
-	await update.message.delete()
-	await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
-	reply_to_message_id=update.message.reply_to_message.id,  
-	reply_markup=ForceReply(True))
-	
-	await bot.send_message(
-        chat_id=Config.LOG_CHANNEL,
-        text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
-	)
+    if update.from_user is None:
+        return
+    aksid = update.from_user.id
+    aks = update.from_user.mention
+    if update.callback_query.message.media:
+        file = update.callback_query.message.media
+        filename = file.file_name
+        filesize = humanize.naturalsize(file.file_size)
+        dcid = FileId.decode(file.file_id).dc_id
+        user_id = update.message.chat.id
+        date = update.message.date
+        await update.message.delete()
+        await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
+                                       reply_to_message_id=update.message.reply_to_message.id,  
+                                       reply_markup=ForceReply(True))
+        
+        await bot.send_message(
+            chat_id=Config.LOG_CHANNEL,
+            text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
+        )
+
 	
 
 @Client.on_callback_query(filters.regex('cancel'))
