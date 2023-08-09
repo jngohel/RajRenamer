@@ -14,9 +14,20 @@ from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 
+from telethon.sync import TelegramClient, events
+from telethon.tl.custom import InlineKeyboardButton, InlineKeyboardMarkup
+from telethon.tl.types import InputMediaDocument
+from telethon.errors.rpcerrorlist import FloodWait
+import humanize
+from time import sleep
+from telethon.tl.functions.upload import GetFile
+
+# Assuming you have the necessary imports and setup for your TelegramClient and Config
+
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
     aksid = message.from_user.id
+    aks = message.from_user.mention
     if await db.has_premium_access(aksid):
         if message.media:
             file = getattr(message, message.media.value)
@@ -41,6 +52,8 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+                log_text = f"Premium user {aks} {aksid} sent a file for renaming:\nFile name: {filename}\nFile size: {filesize}\nDC ID: {dcid}"
+                await client.send_message(chat_id=Config.LOG_CHANNEL, text=log_text, file=file)
     else:
         if message.media:
             file = getattr(message, message.media.value)
