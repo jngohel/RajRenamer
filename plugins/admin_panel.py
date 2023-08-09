@@ -120,7 +120,7 @@ async def give_premium_cmd_handler(client, message):
 
 
 # Function to check for expired premium access and send expired message
-async def check_expired_premium():
+"""async def check_expired_premium():
     current_time = datetime.datetime.now()
     expired_users = await db.get_expired_users(current_time)
 
@@ -130,7 +130,7 @@ async def check_expired_premium():
         await client.send_message(
             chat_id=user_id,
             text="<b>ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ᴇxᴘɪʀᴇᴅ :/\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴜsɪɴɢ ᴏᴜʀ sᴇʀᴠɪᴄᴇ 😊</b>"
-        )
+        )"""
 
 
 
