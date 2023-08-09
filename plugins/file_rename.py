@@ -42,8 +42,8 @@ async def rename_start(client, message):
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
 		await client.send_message(
-                    chat_id=Config.LOG_CHANNEL,
-                    text=f"<b>User - {aks}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>")
+		    chat_id=Config.LOG_CHANNEL,
+		    text=f"<b>User - {aks}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>")
     else:
         if message.media:
             file = getattr(message, message.media.value)
