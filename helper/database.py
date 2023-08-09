@@ -87,29 +87,18 @@ class Database:
             print(f"Error updating document: {e}")
             return False
 
-    async def check_expired_premium(self):
-        current_time = datetime.datetime.now()
-        expired_users = await self.get_user({"expiry_time": {"$lt": current_time}})
-        
-        for user in expired_users:
-            user_id = user["id"]
-            update_successful = await self.update_one(
-                {"id": user_id, "expiry_time": {"$lt": current_time}},
-                {"$set": {"expiry_time": None}}
-            )
-            if update_successful:
-                await self.client.send_message(
-                    chat_id=user_id,
-                    text="<b>Your premium access has expired. Thank you for using our service!</b>"
-                )
+    async def get_expired(self, current_time):
+        expired_users = []
+        if data := self.users.find({"expiry_time": {"$lt": current_time}}):
+            async for user in data:
+                expired_users.append(user)
+        return expired_users
+
 
     async def remove_premium_access(self, user_id):
-        update_successful = await self.update_one(
-            {"id": user_id},
-            {"$set": {"expiry_time": None}}
-        )
-        return update_successful
-
+        return await self.update_one(
+            {"id": user_id}, {"$set": {"expiry_time": None}}
+            )
 
 
 db = Database(Config.DB_URL, Config.DB_NAME)
