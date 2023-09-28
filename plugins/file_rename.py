@@ -15,9 +15,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 
 FORWARD_CHANNEL = -1001939100595
 
-def is_admin(message: Message):
-    return message.from_user and message.chat and message.from_user.id in Config.ADMIN
-
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
     aksid = message.from_user.id
@@ -26,6 +23,7 @@ async def rename_start(client, message):
         if message.media:
             file = getattr(message, message.media.value)
             filename = file.file_name
+	    renamed_file_path = "/path/to/renamed/file"
             filesize = humanize.naturalsize(file.file_size)
             dcid = FileId.decode(file.file_id).dc_id
             if file.file_size > 2000 * 1024 * 1024:
@@ -37,17 +35,18 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-		if is_admin(message):
-		    aks = message.reply_to_message.document.file_id
+		try:
                     await client.send_document(
-			chat_id=FORWARD_CHANNEL,
-			document=aks,
-			caption=f"<code>{filename}</code>"
-		    )
-		    await client.send_message(
-		        chat_id=Config.LOG_CHANNEL,
-		        text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
-	            )
+                        chat_id=FORWARD_CHANNEL,
+                        document=renamed_file_path,
+                        caption=f"<code>{filename}</code>"
+                    )
+                except Exception as e:
+                    print("An error occurred while sending the renamed file to the target channel:", str(e))
+                await client.send_message(
+		    chat_id=Config.LOG_CHANNEL,
+		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
+	        )
             except FloodWait as e:
                 await sleep(e.value)
                 text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
