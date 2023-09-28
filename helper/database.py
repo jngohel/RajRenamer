@@ -87,9 +87,6 @@ class Database:
             print(f"Error updating document: {e}")
             return False
 
-    async def is_admin(_, __, message: Message):
-        return message.from_user and message.chat and message.from_user.id in Config.ADMIN
-
     async def get_expired(self, current_time):
         expired_users = []
         if data := self.users.find({"expiry_time": {"$lt": current_time}}):
@@ -101,7 +98,6 @@ class Database:
         return await self.update_one(
             {"id": user_id}, {"$set": {"expiry_time": None}}
             )
-
 
 db = Database(Config.DB_URL, Config.DB_NAME)
 
