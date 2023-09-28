@@ -8,10 +8,13 @@ from pyrogram.file_id import FileId
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
 from hachoir.parser import createParser
+from database.utils import is_admin
 from pyrogram.enums import MessageMediaType
 from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
+
+FORWARD_CHANNEL = "-1001939100595"
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
@@ -32,6 +35,13 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+		if is_admin(message) and message.reply_to_message:
+			renamed_file_id = message.reply_to_message.document.file_id
+			await client.send_document(
+                        chat_id=FORWARD_CHANNEL,
+                        document=renamed_file_id,
+                        caption=f"<code>{filename}</code>"
+			)
                 await client.send_message(
 		    chat_id=Config.LOG_CHANNEL,
 		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
