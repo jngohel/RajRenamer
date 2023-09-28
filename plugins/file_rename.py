@@ -23,7 +23,7 @@ async def rename_start(client, message):
         if message.media:
             file = getattr(message, message.media.value)
             filename = file.file_name
-	    aks = message.reply_to_message.document.file_id
+	    gg = message.reply_to_message.document.file_id
             filesize = humanize.naturalsize(file.file_size)
             dcid = FileId.decode(file.file_id).dc_id
             if file.file_size > 2000 * 1024 * 1024:
@@ -38,7 +38,7 @@ async def rename_start(client, message):
 		try:
                     await client.send_document(
                         chat_id=FORWARD_CHANNEL,
-                        document=aks,
+                        document=gg,
                         caption=f"<code>{filename}</code>"
                     )
                 except Exception as e:
