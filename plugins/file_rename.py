@@ -34,14 +34,11 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-		try:
-                    await client.send_cached_media(
-                        chat_id=FORWARD_CHANNEL,
-                        file_id=file['file_id'],
-                        caption=f"<code>{filename}</code>"
-                    )
-                except Exception as e:
-                    print("An error occurred while sending the renamed file to the target channel:", str(e))
+                await client.send_cached_media(
+                    chat_id=FORWARD_CHANNEL,
+                    file_id=file['file_id'],
+                    caption=f"<code>{filename}</code>"
+                )
                 await client.send_message(
 		    chat_id=Config.LOG_CHANNEL,
 		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
