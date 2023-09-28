@@ -162,7 +162,7 @@ async def doc(bot, update):
                 progress=progress_for_pyrogram,
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
         elif type == "video": 
-            kd = await bot.send_video(
+            bot = await bot.send_video(
 		update.message.chat.id,
 	        video=file_path,
 	        caption=caption,
@@ -171,7 +171,7 @@ async def doc(bot, update):
 	        progress=progress_for_pyrogram,
 		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
 	    )
-	    await kd.copy(chat_id=FORWARD_CHANNEL)
+	    await bot.copy_message(chat_id=FORWARD_CHANNEL)
 	        
         elif type == "audio": 
             await bot.send_audio(
