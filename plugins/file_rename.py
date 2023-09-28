@@ -162,7 +162,7 @@ async def doc(bot, update):
                 progress=progress_for_pyrogram,
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
         elif type == "video": 
-            await bot.send_video(
+            kd = await bot.send_video(
 		update.message.chat.id,
 	        video=file_path,
 	        caption=caption,
@@ -170,12 +170,9 @@ async def doc(bot, update):
 		duration=duration,
 	        progress=progress_for_pyrogram,
 		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
-            if is_admin:
-	        await bot.send_cached_media(
-                    chat_id=FORWARD_CHANNEL,
-                    file_id=message.video.file_id,
-                    caption=f"<code>{filename}</code>"
-	        )
+         #   if is_admin:
+	    await kd.copy(chat_id=FORWARD_CHANNEL)
+	        
         elif type == "audio": 
             await bot.send_audio(
 		update.message.chat.id,
