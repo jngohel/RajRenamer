@@ -8,7 +8,7 @@ from pyrogram.file_id import FileId
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
 from hachoir.parser import createParser
-from database.utils import is_admin
+from helper.database import is_admin
 from pyrogram.enums import MessageMediaType
 from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
