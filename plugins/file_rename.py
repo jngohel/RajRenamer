@@ -169,8 +169,8 @@ async def doc(bot, update):
 		thumb=ph_path,
 		duration=duration,
 	        progress=progress_for_pyrogram,
-		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
-         #   if is_admin:
+		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
+	    )
 	    await kd.copy(chat_id=FORWARD_CHANNEL)
 	        
         elif type == "audio": 
