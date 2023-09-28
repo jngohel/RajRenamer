@@ -11,7 +11,6 @@ from route import web_server
 async def check_expired_premium(client):
     while 1:
         data = await db.get_expired(datetime.now())
-        print(data)
         for user in data:
             user_id = user["id"]
             await db.remove_premium_access(user_id)
