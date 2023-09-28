@@ -171,9 +171,9 @@ async def doc(bot, update):
 	        progress=progress_for_pyrogram,
 		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
 	    )
-	    await bot.copy_message(chat_id=FORWARD_CHANNEL)
-	        
-        elif type == "audio": 
+	    await bot.send_message(chat_id=FORWARD_CHANNEL)
+	
+	elif type == "audio": 
             await bot.send_audio(
 		update.message.chat.id,
 		audio=file_path,
