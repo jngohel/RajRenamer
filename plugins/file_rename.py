@@ -15,7 +15,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 
 FORWARD_CHANNEL = "-1001939100595"
 
-def is_admin(_, __, message: Message):
+def is_admin(message: Message):
     return message.from_user and message.chat and message.from_user.id in Config.ADMIN
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
