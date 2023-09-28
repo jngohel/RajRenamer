@@ -87,13 +87,15 @@ class Database:
             print(f"Error updating document: {e}")
             return False
 
+    def is_admin(_, __, message: Message):
+    return message.from_user and message.chat and message.from_user.id in Config.ADMIN
+
     async def get_expired(self, current_time):
         expired_users = []
         if data := self.users.find({"expiry_time": {"$lt": current_time}}):
             async for user in data:
                 expired_users.append(user)
         return expired_users
-
 
     async def remove_premium_access(self, user_id):
         return await self.update_one(
