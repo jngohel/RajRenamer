@@ -34,11 +34,6 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-                await client.send_cached_media(
-                    chat_id=FORWARD_CHANNEL,
-                    file_id=message.video.file_id,
-                    caption=f"<code>{filename}</code>"
-                )
                 await client.send_message(
 		    chat_id=Config.LOG_CHANNEL,
 		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
@@ -156,6 +151,7 @@ async def doc(bot, update):
 
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
+    is_admin = update.message.from_user.id in Config.ADMIN
     try:
         if type == "document":
             await bot.send_document(
@@ -174,6 +170,12 @@ async def doc(bot, update):
 		duration=duration,
 	        progress=progress_for_pyrogram,
 		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
+	   if is_admin:
+	       await bot.send_cached_media(
+                   chat_id=FORWARD_CHANNEL,
+                   file_id=message.video.file_id,
+                   caption=f"<code>{filename}</code>"
+	       )
         elif type == "audio": 
             await bot.send_audio(
 		update.message.chat.id,
