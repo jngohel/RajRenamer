@@ -38,16 +38,16 @@ async def rename_start(client, message):
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
 		if is_admin(message) and message.reply_to_message:
-			aks = message.reply_to_message.document.file_id
-			await client.send_document(
-				chat_id=FORWARD_CHANNEL,
-                                document=aks,
-                                caption=f"<code>{filename}</code>"
-		        )
-                await client.send_message(
-		    chat_id=Config.LOG_CHANNEL,
-		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
-	        )
+		    aks = message.reply_to_message.document.file_id
+                    await client.send_document(
+			chat_id=FORWARD_CHANNEL,
+			document=aks,
+			caption=f"<code>{filename}</code>"
+		    )
+		    await client.send_message(
+		        chat_id=Config.LOG_CHANNEL,
+		        text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
+	            )
             except FloodWait as e:
                 await sleep(e.value)
                 text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{filename}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
