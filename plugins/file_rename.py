@@ -8,13 +8,15 @@ from pyrogram.file_id import FileId
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait
 from hachoir.parser import createParser
-from helper.database import is_admin
 from pyrogram.enums import MessageMediaType
 from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 FORWARD_CHANNEL = "-1001939100595"
+
+def is_admin(_, __, message: Message):
+    return message.from_user and message.chat and message.from_user.id in Config.ADMIN
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
@@ -69,8 +71,6 @@ async def rename_start(client, message):
         )  
         await message.reply_text("<i>ʏᴏᴜ ᴄᴀɴ'ᴛ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ᴏɴʟʏ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs ᴄᴀɴ ᴜsᴇ ɪᴛ 😐\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ᴛʜᴇɴ ᴍsɢ ʜᴇʀᴇ ᴀɴᴅ ɢᴇᴛ ᴀᴄᴄᴇss - @Aks_support01_bot</i>")
 
-
-
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
 	user_id = update.message.chat.id
@@ -78,9 +78,7 @@ async def rename(bot, update):
 	await update.message.delete()
 	await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
 	reply_to_message_id=update.message.reply_to_message.id,  
-	reply_markup=ForceReply(True))
-
-	
+	reply_markup=ForceReply(True))	
 
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot, update):
@@ -88,7 +86,6 @@ async def cancel(bot, update):
         await update.message.delete()
     except:
         return
-
 
 @Client.on_message(filters.private & filters.reply)
 async def refunc(client, message):
@@ -117,8 +114,6 @@ async def refunc(client, message):
             reply_to_message_id=file.id,
             reply_markup=InlineKeyboardMarkup(button)
         )
-
-
 
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):    
