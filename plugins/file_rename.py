@@ -37,7 +37,7 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-		if is_admin(message) and message.reply_to_message:
+		if is_admin(message):
 		    aks = message.reply_to_message.document.file_id
                     await client.send_document(
 			chat_id=FORWARD_CHANNEL,
