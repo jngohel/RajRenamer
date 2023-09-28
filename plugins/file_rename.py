@@ -13,7 +13,7 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
-FORWARD_CHANNEL = "-1001939100595"
+FORWARD_CHANNEL = -1001939100595
 
 def is_admin(message: Message):
     return message.from_user and message.chat and message.from_user.id in Config.ADMIN
@@ -37,13 +37,13 @@ async def rename_start(client, message):
                      InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")]
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-		    if is_admin(message) and message.reply_to_message:
-			    aks = message.reply_to_message.document.file_id
-			    await client.send_document(
-				    chat_id=FORWARD_CHANNEL,
-                                    document=aks,
-                                    caption=f"<code>{filename}</code>"
-		             )
+		if is_admin(message) and message.reply_to_message:
+			aks = message.reply_to_message.document.file_id
+			await client.send_document(
+				chat_id=FORWARD_CHANNEL,
+                                document=aks,
+                                caption=f"<code>{filename}</code>"
+		        )
                 await client.send_message(
 		    chat_id=Config.LOG_CHANNEL,
 		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
