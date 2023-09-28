@@ -38,12 +38,12 @@ async def rename_start(client, message):
                 ]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
 		if is_admin(message) and message.reply_to_message:
-			renamed_file_id = message.reply_to_message.document.file_id
-			await client.send_document(
+		    renamed_file_id = message.reply_to_message.document.file_id
+		    await client.send_document(
                         chat_id=FORWARD_CHANNEL,
                         document=renamed_file_id,
                         caption=f"<code>{filename}</code>"
-			)
+		    )
                 await client.send_message(
 		    chat_id=Config.LOG_CHANNEL,
 		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
