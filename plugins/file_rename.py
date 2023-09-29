@@ -114,15 +114,15 @@ async def doc(bot, update):
 
     ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
     try:
-     	path = await bot.download_media(message=file, file_name=file_path, progress=progress_for_pyrogram,progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
+        path = await bot.download_media(message=file, file_name=file_path, progress=progress_for_pyrogram, progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
     except Exception as e:
-     	return await ms.edit(e)
+        return await ms.edit(e)
 
     duration = 0
     try:
         metadata = extractMetadata(createParser(file_path))
         if metadata.has("duration"):
-           duration = metadata.get('duration').seconds
+            duration = metadata.get('duration').seconds
     except:
         pass
     ph_path = None
@@ -132,53 +132,55 @@ async def doc(bot, update):
     c_thumb = await db.get_thumbnail(update.message.chat.id)
 
     if c_caption:
-         try:
-             caption = c_caption.format(filename=new_filename, filesize=humanbytes(media.file_size), duration=convert(duration))
-         except Exception as e:
-             return await ms.edit(text=f"Yᴏᴜʀ Cᴀᴩᴛɪᴏɴ Eʀʀᴏʀ Exᴄᴇᴩᴛ Kᴇyᴡᴏʀᴅ Aʀɢᴜᴍᴇɴᴛ ●> ({e})")             
+        try:
+            caption = c_caption.format(filename=new_filename, filesize=humanbytes(media.file_size), duration=convert(duration))
+        except Exception as e:
+            return await ms.edit(text=f"Yᴏᴜʀ Cᴀᴩᴛɪᴏɴ Eʀʀᴏʀ Exᴄᴇᴩᴛ Kᴇyᴡᴏʀᴅ Aʀɢᴜᴍᴇɴᴛ ●> ({e})")             
     else:
-         caption = f"**{new_filename}**"
+        caption = f"**{new_filename}**"
  
     if (media.thumbs or c_thumb):
-         if c_thumb:
-             ph_path = await bot.download_media(c_thumb) 
-         else:
-             ph_path = await bot.download_media(media.thumbs[0].file_id)
-         Image.open(ph_path).convert("RGB").save(ph_path)
-         img = Image.open(ph_path)
-         img.resize((320, 320))
-         img.save(ph_path, "JPEG")
+        if c_thumb:
+            ph_path = await bot.download_media(c_thumb) 
+        else:
+            ph_path = await bot.download_media(media.thumbs[0].file_id)
+        Image.open(ph_path).convert("RGB").save(ph_path)
+        img = Image.open(ph_path)
+        img.resize((320, 320))
+        img.save(ph_path, "JPEG")
 
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
     try:
-	if type == "document":
-	    sent=await bot.send_document(
+        if type == "document":
+            sent = await bot.send_document(
                 update.message.chat.id,
                 document=file_path,
                 thumb=ph_path, 
                 caption=caption, 
                 progress=progress_for_pyrogram,
-                progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
-	elif type == "video":
-            sent=await bot.send_video(
-		update.message.chat.id,
-	        video=file_path,
-	        caption=caption,
-		thumb=ph_path,
-		duration=duration,
-	        progress=progress_for_pyrogram,
-		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
-	    )
-	elif type == "audio":
-            sent=await bot.send_audio(
-		update.message.chat.id,
-		audio=file_path,
-		caption=caption,
-		thumb=ph_path,
-		duration=duration,
-	        progress=progress_for_pyrogram,
-	        progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
+                progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
+            )
+        elif type == "video":
+            sent = await bot.send_video(
+                update.message.chat.id,
+                video=file_path,
+                caption=caption,
+                thumb=ph_path,
+                duration=duration,
+                progress=progress_for_pyrogram,
+                progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
+            )
+        elif type == "audio":
+            sent = await bot.send_audio(
+                update.message.chat.id,
+                audio=file_path,
+                caption=caption,
+                thumb=ph_path,
+                duration=duration,
+                progress=progress_for_pyrogram,
+                progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
+            )
     except Exception as e:          
         os.remove(file_path)
         if ph_path:
@@ -190,9 +192,4 @@ async def doc(bot, update):
     await ms.delete() 
     os.remove(file_path) 
     if ph_path:
-	os.remove(ph_path) 
-
-
-
-
-
+        os.remove(ph_path)
