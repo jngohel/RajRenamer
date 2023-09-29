@@ -13,7 +13,7 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
-FORWARD_CHANNEL = -1001939100595
+FORWARD_CHANNEL = [-1001939100595]
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
@@ -188,7 +188,8 @@ async def doc(bot, update):
         return await ms.edit(f" Eʀʀᴏʀ {e}")
 
     if user_id in Config.ADMIN:
-        await sent.copy(chat_id=FORWARD_CHANNEL)
+	for id in FORWARD_CHANNEL:
+            await sent.copy(chat_id=FORWARD_CHANNEL)
     await ms.delete() 
     os.remove(file_path) 
     if ph_path:
