@@ -120,7 +120,7 @@ async def premium_user(client, message):
     aa = await message.reply_text("Fetching ...")
     new = f"Paid Users - \n"
     premium_users_found = False
-    async for x in await db.get_user():
+    async for x in await db.get_user(user_id):
         if await db.has_premium_access(x['id']):
             try:
                 new += f"> {x['id']} - {(await client.get_users(x['id'])).first_name}\n"
