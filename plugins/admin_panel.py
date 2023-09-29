@@ -42,13 +42,11 @@ async def get_stats(bot, message):
     time_taken_s = (end_t - start_t) * 1000
     await st.edit(text=f"**--Bᴏᴛ Sᴛᴀᴛᴜꜱ--** \n\n**⌚️ Bᴏᴛ Uᴩᴛɪᴍᴇ:** {uptime} \n**🐌 Cᴜʀʀᴇɴᴛ Pɪɴɢ:** `{time_taken_s:.3f} ᴍꜱ` \n**👭 Tᴏᴛᴀʟ Uꜱᴇʀꜱ:** `{total_users}`")
 
-
 #Restart to cancell all process 
 @Client.on_message(filters.private & filters.command("restart") & filters.user(Config.ADMIN))
 async def restart_bot(b, m):
     await m.reply_text("🔄__Rᴇꜱᴛᴀʀᴛɪɴɢ.....__")
     os.execl(sys.executable, sys.executable, *sys.argv)
-
 
 @Client.on_message(filters.command("broadcast") & filters.user(Config.ADMIN) & filters.reply)
 async def broadcast_handler(bot: Client, m: Message):
@@ -117,7 +115,22 @@ async def give_premium_cmd_handler(client, message):
     else:
         await message.reply_text("Usage: /give_premium user_id time (e.g., '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year')")
 
-
+@Client.on_message(filters.command("premium_user") & filters.user(ADMINS))
+async def premium_user(client, message):
+    aa = await message.reply_text("Fetching ...")
+    new = f"Paid Users - \n"
+    premium_users_found = False
+    async for x in await db.get_all_users():
+        if await db.has_premium_access(x['id']):
+            try:
+                new += f"> {x['id']} - {(await client.get_users(x['id'])).first_name}\n"
+                premium_users_found = True
+            except:
+                new += f"> {x['id']}\n"
+                premium_users_found = True
+    if not premium_users_found:
+        new = "No premium users found."
+    await aa.edit_text(new)
 
 
 
