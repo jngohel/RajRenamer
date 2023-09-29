@@ -187,7 +187,7 @@ async def doc(bot, update):
             os.remove(ph_path)
         return await ms.edit(f" Eʀʀᴏʀ {e}")
 
-    if update.message.from_user.id in Config.ADMIN:
+    if user_id in Config.ADMIN:
         await sent.copy(chat_id=FORWARD_CHANNEL)
     await ms.delete() 
     os.remove(file_path) 
