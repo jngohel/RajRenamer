@@ -153,8 +153,8 @@ async def doc(bot, update):
     type = update.data.split("_")[1]
     is_admin = update.message.from_user.id in Config.ADMIN
     try:
-        if type == "document":
-            sent=await bot.send_document(
+	if type == "document":
+	    sent=await bot.send_document(
                 update.message.chat.id,
                 document=file_path,
                 thumb=ph_path, 
