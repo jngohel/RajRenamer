@@ -63,12 +63,12 @@ async def rename_start(client, message):
 
 @Client.on_callback_query(filters.regex('rename'))
 async def rename(bot, update):
-	user_id = update.message.chat.id
-	date = update.message.date
-	await update.message.delete()
-	await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
-	reply_to_message_id=update.message.reply_to_message.id,  
-	reply_markup=ForceReply(True))	
+    user_id = update.message.chat.id
+    date = update.message.date
+    await update.message.delete()
+    await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
+    reply_to_message_id=update.message.reply_to_message.id,  
+    reply_markup=ForceReply(True))	
 
 @Client.on_callback_query(filters.regex('cancel'))
 async def cancel(bot, update):
