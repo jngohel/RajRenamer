@@ -106,18 +106,18 @@ async def refunc(client, message):
         )
 
 @Client.on_callback_query(filters.regex("upload"))
-async def doc(bot, update):    
+async def doc(bot, update):
     new_name = update.message.text
     new_filename = new_name.split(":-")[1]
     file_path = f"downloads/{new_filename}"
     file = update.message.reply_to_message
 
-    ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")    
+    ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
     try:
      	path = await bot.download_media(message=file, file_name=file_path, progress=progress_for_pyrogram,progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
     except Exception as e:
      	return await ms.edit(e)
-     	     
+
     duration = 0
     try:
         metadata = extractMetadata(createParser(file_path))
@@ -151,8 +151,7 @@ async def doc(bot, update):
 
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
-    is_admin = update.message.from_user.id in Config.ADMIN
-	try:
+    try:
 	if type == "document":
 	    sent=await bot.send_document(
                 update.message.chat.id,
@@ -161,7 +160,7 @@ async def doc(bot, update):
                 caption=caption, 
                 progress=progress_for_pyrogram,
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
-	elif type == "video": 
+	elif type == "video":
             sent=await bot.send_video(
 		update.message.chat.id,
 	        video=file_path,
@@ -171,7 +170,7 @@ async def doc(bot, update):
 	        progress=progress_for_pyrogram,
 		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
 	    )
-	elif type == "audio": 
+	elif type == "audio":
             sent=await bot.send_audio(
 		update.message.chat.id,
 		audio=file_path,
@@ -186,10 +185,12 @@ async def doc(bot, update):
             os.remove(ph_path)
         return await ms.edit(f" Eʀʀᴏʀ {e}")
 
-    await sent.copy(chat_id=FORWARD_CHANNEL)
+    if update.message.from_user.id in Config.ADMIN:
+        await sent.copy(chat_id=FORWARD_CHANNEL)
     await ms.delete() 
     os.remove(file_path) 
-    if ph_path: os.remove(ph_path) 
+    if ph_path:
+	os.remove(ph_path) 
 
 
 
