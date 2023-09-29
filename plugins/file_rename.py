@@ -152,7 +152,7 @@ async def doc(bot, update):
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
     is_admin = update.message.from_user.id in Config.ADMIN
-    try:
+	try:
 	if type == "document":
 	    sent=await bot.send_document(
                 update.message.chat.id,
