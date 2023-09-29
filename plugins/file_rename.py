@@ -154,15 +154,15 @@ async def doc(bot, update):
     is_admin = update.message.from_user.id in Config.ADMIN
     try:
         if type == "document":
-            sent = await bot.send_document(
+            sent=await bot.send_document(
                 update.message.chat.id,
                 document=file_path,
                 thumb=ph_path, 
                 caption=caption, 
                 progress=progress_for_pyrogram,
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time()))
-        elif type == "video": 
-            sent = await bot.send_video(
+	elif type == "video": 
+            sent=await bot.send_video(
 		update.message.chat.id,
 	        video=file_path,
 	        caption=caption,
@@ -171,7 +171,6 @@ async def doc(bot, update):
 	        progress=progress_for_pyrogram,
 		progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
 	    )
-	
 	elif type == "audio": 
             sent=await bot.send_audio(
 		update.message.chat.id,
