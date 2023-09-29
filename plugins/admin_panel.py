@@ -115,7 +115,7 @@ async def give_premium_cmd_handler(client, message):
     else:
         await message.reply_text("Usage: /give_premium user_id time (e.g., '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year')")
 
-@Client.on_message(filters.command("premium_user") & filters.user(ADMINS))
+@Client.on_message(filters.command("premium_user") & filters.user(Config.ADMIN))
 async def premium_user(client, message):
     aa = await message.reply_text("Fetching ...")
     new = f"Paid Users - \n"
