@@ -23,7 +23,7 @@ async def rename_start(client, message):
         if message.media:
             file = getattr(message, message.media.value)
             filename = file.file_name
-	    caption = message.caption
+            caption = message.caption
             filesize = humanize.naturalsize(file.file_size)
             dcid = FileId.decode(file.file_id).dc_id
             if file.file_size > 2000 * 1024 * 1024:
