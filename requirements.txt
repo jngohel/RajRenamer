@@ -1,4 +1,4 @@
-git+https://github.com/technicalaks/aks_pyrogram
+pyrogram
 TgCrypto==1.2.5 
 motor==3.1.2
 dnspython==2.3.0
