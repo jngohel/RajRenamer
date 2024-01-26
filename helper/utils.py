@@ -4,7 +4,6 @@ from pytz import timezone
 from config import Config, Txt 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-
 async def progress_for_pyrogram(current, total, ud_type, message, start):
     now = time.time()
     diff = now - start
@@ -14,10 +13,8 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
         elapsed_time = round(diff) * 1000
         time_to_completion = round((total - current) / speed) * 1000
         estimated_total_time = elapsed_time + time_to_completion
-
         elapsed_time = TimeFormatter(milliseconds=elapsed_time)
         estimated_total_time = TimeFormatter(milliseconds=estimated_total_time)
-
         progress = "{0}{1}".format(
             ''.join(["⬢" for i in range(math.floor(percentage / 5))]),
             ''.join(["⬡" for i in range(20 - math.floor(percentage / 5))])
@@ -47,7 +44,6 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'ʙ'
-
 
 def TimeFormatter(milliseconds: int) -> str:
     seconds, milliseconds = divmod(int(milliseconds), 1000)
@@ -79,26 +75,19 @@ async def send_log(b, u):
             f"<b>NEW_USER_RENAME_BOT</b>\nDate:- {date}\nTime:- {time}\n\nUser:- {u.mention}\nId:- `{u.id}`\nUsername:- @{u.username}\n\nBy: {b.mention}"
         )
         
-
 async def get_seconds(time_string):
     def extract_value_and_unit(ts):
         value = ""
         unit = ""
-
         index = 0
         while index < len(ts) and ts[index].isdigit():
             value += ts[index]
             index += 1
-
         unit = ts[index:]
-
         if value:
             value = int(value)
-
         return value, unit
-
     value, unit = extract_value_and_unit(time_string)
-
     if unit == 's':
         return value
     elif unit == 'min':
@@ -113,12 +102,3 @@ async def get_seconds(time_string):
         return value * 86400 * 365
     else:
         return 0
-
-
-
-
-
-
-
-
-
