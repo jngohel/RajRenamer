@@ -83,17 +83,17 @@ async def cancel(bot, update):
 async def refunc(client, message):
     reply_message = message.reply_to_message
     if isinstance(reply_message.reply_markup, ForceReply):
-        new_name = message.text 
+        new_file_name = message.text 
         await message.delete() 
         msg = await client.get_messages(message.chat.id, reply_message.id)
         file = msg.reply_to_message
         media = getattr(file, file.media.value)
-        if not "." in new_name:
+        if not "." in new_file_name:
             if "." in media.file_name:
                 extn = media.file_name.rsplit('.', 1)[-1]
             else:
                 extn = "mkv"
-            new_name = new_name + "." + extn
+            new_name = new_file_name + "." + extn
         await reply_message.delete()
         button = [[InlineKeyboardButton("📁 ᴅᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload_document")]]
         if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
@@ -101,18 +101,18 @@ async def refunc(client, message):
         elif file.media == MessageMediaType.AUDIO:
             button.append([InlineKeyboardButton("🎵 ᴀᴜᴅɪᴏ", callback_data = "upload_audio")])
         await message.reply(
-            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- ```{new_name}```</b>",
+            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- ```{new_file_name}```</b>",
             reply_to_message_id=file.id,
             reply_markup=InlineKeyboardMarkup(button)
         )
 
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):
-    new_name = update.message.text
-    new_filename = new_name.split(":-")[1]
-    file_path = f"downloads/{new_filename}"
+    new_file_name = update.message.text
+    new_filename = new_file_name.split(":-")[1]
     file = update.message.reply_to_message
     ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
+    file_path = f"downloads/{new_filename}"
     try:
         path = await bot.download_media(message=file, file_name=file_path, progress=progress_for_pyrogram, progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
     except Exception as e:
