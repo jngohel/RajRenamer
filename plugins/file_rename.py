@@ -1,4 +1,5 @@
-import os, time
+import os
+import time
 import humanize
 from config import Config
 from PIL import Image
