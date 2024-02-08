@@ -178,7 +178,7 @@ async def doc(bot, update):
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
             )
     except Exception as e:
-	if os.path.isfile(file_path):
+        if os.path.isfile(file_path):
 	    os.remove(file_path)
         if ph_path:
             os.remove(ph_path)
