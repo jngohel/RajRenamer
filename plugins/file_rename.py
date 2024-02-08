@@ -188,6 +188,6 @@ async def doc(bot, update):
             await sent.copy(chat_id=id)
     await ms.delete() 
     if os.path.isfile(file_path):
-    os.remove(file_path)
+	os.remove(file_path)
     if ph_path:
         os.remove(ph_path)
