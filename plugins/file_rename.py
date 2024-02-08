@@ -187,6 +187,7 @@ async def doc(bot, update):
         for id in FORWARD_CHANNEL:
             await sent.copy(chat_id=id)
     await ms.delete() 
-    os.remove(file_path) 
+    if os.path.isfile(file_path):
+    os.remove(file_path)
     if ph_path:
         os.remove(ph_path)
