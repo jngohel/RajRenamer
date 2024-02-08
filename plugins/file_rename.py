@@ -177,9 +177,9 @@ async def doc(bot, update):
                 progress=progress_for_pyrogram,
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
             )
-    except Exception as e:          
-        if os.path.isfile(file_path):
-        os.remove(file_path)
+    except Exception as e:
+	if os.path.isfile(file_path):
+	    os.remove(file_path)
         if ph_path:
             os.remove(ph_path)
         return await ms.edit(f" Eʀʀᴏʀ {e}")
