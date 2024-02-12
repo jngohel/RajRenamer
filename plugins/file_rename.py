@@ -177,9 +177,8 @@ async def doc(bot, update):
                 progress=progress_for_pyrogram,
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
             )
-    except Exception as e:
-        if os.path.isfile(file_path):
-            os.remove(file_path)
+    except Exception as e:          
+        os.remove(file_path)
         if ph_path:
             os.remove(ph_path)
         return await ms.edit(f" Eʀʀᴏʀ {e}")
@@ -187,8 +186,7 @@ async def doc(bot, update):
     if user_id in Config.ADMIN:
         for id in FORWARD_CHANNEL:
             await sent.copy(chat_id=id)
-    await ms.delete()
-    if os.path.isfile(file_path):
-        os.remove(file_path)
+    await ms.delete() 
+    os.remove(file_path) 
     if ph_path:
         os.remove(ph_path)
