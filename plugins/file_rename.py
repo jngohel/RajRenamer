@@ -101,7 +101,7 @@ async def refunc(client, message):
         elif file.media == MessageMediaType.AUDIO:
             button.append([InlineKeyboardButton("🎵 ᴀᴜᴅɪᴏ", callback_data = "upload_audio")])
         await message.reply(
-            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- ```{new_file_name}```</b>",
+            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- `{new_file_name}`</b>",
             reply_to_message_id=file.id,
             reply_markup=InlineKeyboardMarkup(button)
         )
@@ -151,7 +151,7 @@ async def doc(bot, update):
         if type == "document":
             sent = await bot.send_document(
                 update.message.chat.id,
-                document=file_path,
+                document=path,
                 thumb=ph_path, 
                 caption=caption, 
                 progress=progress_for_pyrogram,
@@ -160,7 +160,7 @@ async def doc(bot, update):
         elif type == "video":
             sent = await bot.send_video(
                 update.message.chat.id,
-                video=file_path,
+                video=path,
                 caption=caption,
                 thumb=ph_path,
                 duration=duration,
@@ -170,7 +170,7 @@ async def doc(bot, update):
         elif type == "audio":
             sent = await bot.send_audio(
                 update.message.chat.id,
-                audio=file_path,
+                audio=path,
                 caption=caption,
                 thumb=ph_path,
                 duration=duration,
@@ -178,7 +178,7 @@ async def doc(bot, update):
                 progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
             )
     except Exception as e:          
-        os.remove(file_path)
+        os.remove(path)
         if ph_path:
             os.remove(ph_path)
         return await ms.edit(f" Eʀʀᴏʀ {e}")
@@ -187,6 +187,6 @@ async def doc(bot, update):
         for id in FORWARD_CHANNEL:
             await sent.copy(chat_id=id)
     await ms.delete() 
-    os.remove(file_path) 
+    os.remove(path) 
     if ph_path:
         os.remove(ph_path)
