@@ -14,7 +14,7 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
-FORWARD_CHANNEL = [-1001851027015]
+FORWARD_CHANNEL = [-1002101130781]
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
