@@ -14,7 +14,7 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
-FORWARD_CHANNEL = [-1001805305525, -1002101130781]
+FORWARD_CHANNEL = [-1001851027015]
 
 @Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
 async def rename_start(client, message):
@@ -36,10 +36,6 @@ async def rename_start(client, message):
 			InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")
 		]]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
-                await client.send_message(
-		    chat_id=Config.LOG_CHANNEL,
-		    text=f"<b>User - {aks}\n\nUser id - {aksid}\n\nFile Name - {filename}\n\nFile Size - {filesize}\n\nDC ID - {dcid}</b>"
-	        )
             except FloodWait as e:
                 await sleep(e.value)
                 text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
@@ -49,18 +45,6 @@ async def rename_start(client, message):
 		]]
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
     else:
-        if message.media:
-            file = getattr(message, message.media.value)
-            ak = file.file_name
-        else:
-            ak = None
-        content = message.text if message.text else None
-        aks = message.from_user.mention
-        user_id = message.from_user.id
-        await client.send_message(
-            chat_id=Config.LOG_CHANNEL,
-            text=f"<b>#Rename_bot_pm\n\nName - {aks}\n\nID - <code>{user_id}</code>\n\nMessage - {content}\n\nFile - {ak}</b>"
-        )  
         await message.reply_text("<i>ʏᴏᴜ ᴄᴀɴ'ᴛ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ᴏɴʟʏ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs ᴄᴀɴ ᴜsᴇ ɪᴛ 😐\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ᴛʜᴇɴ ᴍsɢ ʜᴇʀᴇ ᴀɴᴅ ɢᴇᴛ ᴀᴄᴄᴇss - @Aks_support01_bot</i>")
 
 @Client.on_callback_query(filters.regex('rename'))
