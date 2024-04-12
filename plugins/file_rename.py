@@ -38,7 +38,7 @@ async def rename_file(client, message):
         msg = await client.get_messages(message.chat.id, reply_message.id)
         if msg.reply_to_message:
             file = msg.reply_to_message
-            media = getattr(file, file.media.value)
+            media = file.media
             if not "." in new_file_name:
                 if "." in media.file_name:
                     extn = media.file_name.rsplit('.', 1)[-1]
