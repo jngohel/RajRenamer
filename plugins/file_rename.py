@@ -54,7 +54,7 @@ async def doc(bot, update):
     name = new_name.split(":")
     new_filename = name[1]
     message = update.message.reply_to_message
-    file = message.document or message.video or message.audio
+    file = message.document or message.video
     ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
     file_path = f"downloads/{new_filename}"
     try:
