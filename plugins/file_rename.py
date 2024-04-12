@@ -31,27 +31,24 @@ async def detect(client, message):
 
 @Client.on_message(filters.private & filters.reply)
 async def rename_file(client, message):
+    reply_message = message.reply_to_message
     if (message.reply_to_message.reply_markup) and isinstance(message.reply_to_message.reply_markup, ForceReply):
         new_file_name = message.text 
         await message.delete() 
-        media = await client.get_messages(message.chat.id, reply_message.id)
-        file = media.reply_to_message.document or media.reply_to_message.video
-        if not "." in new_file_name:
-            if "." in media.file_name:
-                extn = media.file_name.rsplit('.', 1)[-1]
-            else:
-                extn = "mkv"
-            new_name = new_file_name + "." + extn
-        await reply_message.delete()
-        button = [[InlineKeyboardButton("📁 ᴅᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload_document")]]
-        if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
-            button.append([InlineKeyboardButton("🎥 ᴠɪᴅᴇᴏ", callback_data = "upload_video")])
+        msg = await client.get_messages(message.chat.id, reply_message.id)
+        file = reply_message.reply_to_message.document or reply_message.reply_to_message.video
+        await reply_message.delete() 
+        button = [[
+            InlineKeyboardButton("📁 Document", callback_data="upload_document"),
+            InlineKeyboardButton("🎥 Video", callback_data="upload_video")
+        ]] 
         await message.reply(
-            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- `{new_file_name}`</b>",
-            reply_to_message_id=file.id,
+            text=f"<b>Select the output file type\n\nFile name: `{new_file_name}`</b>",
+            reply_to_message_id=file.message_id,
             reply_markup=InlineKeyboardMarkup(button)
         )
-        
+
+      
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):
     new_file_name = update.message.text
