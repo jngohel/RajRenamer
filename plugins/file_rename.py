@@ -53,7 +53,8 @@ async def doc(bot, update):
     new_name = update.message.text
     name = new_name.split(":")
     new_filename = name[1]
-    file = update.message.reply_to_message
+    message = update.message.reply_to_message
+    file = message.document or message.video or message.audio
     ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
     file_path = f"downloads/{new_filename}"
     try:
@@ -72,16 +73,15 @@ async def doc(bot, update):
     user_id = int(update.message.chat.id) 
     media = getattr(file, file.media.value)
     c_thumb = await db.get_thumbnail(update.message.chat.id)
-    caption = f"<b>{new_filename}</b>" 
-    if (media.thumbs or c_thumb):
-        if c_thumb:
-            ph_path = await bot.download_media(c_thumb)
-            Image.open(ph_path).convert("RGB").save(ph_path)
-            img = Image.open(ph_path)
-            img.resize((320, 320))
-            img.save(ph_path, "JPEG")
-        else:
-            ph_path = None
+    caption = f"<b>{new_filename}</b>"
+    if c_thumb:
+        ph_path = await bot.download_media(c_thumb)
+        Image.open(ph_path).convert("RGB").save(ph_path)
+        img = Image.open(ph_path)
+        img.resize((320, 320))
+        img.save(ph_path, "JPEG")
+    else:
+        ph_path = None
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
     try:
