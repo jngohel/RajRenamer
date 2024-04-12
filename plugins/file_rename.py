@@ -60,6 +60,7 @@ async def doc(bot, update):
         path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
     except Exception as e:
         return await ms.edit(e)
+        print(e)
     duration = 0
     try:
         metadata = extractMetadata(createParser(file_path))
@@ -74,13 +75,13 @@ async def doc(bot, update):
     caption = f"<b>{new_filename}</b>" 
     if (media.thumbs or c_thumb):
         if c_thumb:
-            ph_path = await bot.download_media(c_thumb) 
+            ph_path = await bot.download_media(c_thumb)
+            Image.open(ph_path).convert("RGB").save(ph_path)
+            img = Image.open(ph_path)
+            img.resize((320, 320))
+            img.save(ph_path, "JPEG")
         else:
-            ph_path = await bot.download_media(media.thumbs[0].file_id)
-        Image.open(ph_path).convert("RGB").save(ph_path)
-        img = Image.open(ph_path)
-        img.resize((320, 320))
-        img.save(ph_path, "JPEG")
+            ph_path = None
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
     try:
