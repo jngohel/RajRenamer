@@ -35,7 +35,8 @@ async def rename_file(client, message):
     if (message.reply_to_message.reply_markup) and isinstance(message.reply_to_message.reply_markup, ForceReply):
         new_file_name = message.text 
         await message.delete() 
-        await client.get_messages(message.chat.id, reply_message.id)
+        msg = await client.get_messages(message.chat.id, reply_message.id)
+        file = reply_message.document or reply_message.video
         await reply_message.delete() 
         button = [[
             InlineKeyboardButton("📁 Document", callback_data="upload_document"),
