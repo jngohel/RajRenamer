@@ -16,7 +16,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 
 FORWARD_CHANNEL = [-1002101130781]
 
-@Client.on_message(filters.private & filters.reply)
 @Client.on_message(filters.private & filters.document | filters.video)
 async def detect(client, message):
     file = getattr(message, message.media.value)
