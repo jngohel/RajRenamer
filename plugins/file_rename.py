@@ -36,7 +36,7 @@ async def rename_file(client, message):
         new_file_name = message.text 
         await message.delete() 
         msg = await client.get_messages(message.chat.id, reply_message.id)
-        file = reply_message.reply_to_message.document or reply_message.reply_to_message.video
+        file = reply_message.document or reply_message.video
         await reply_message.delete() 
         button = [[
             InlineKeyboardButton("📁 Document", callback_data="upload_document"),
@@ -48,7 +48,6 @@ async def rename_file(client, message):
             reply_markup=InlineKeyboardMarkup(button)
         )
 
-      
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):
     new_file_name = update.message.text
