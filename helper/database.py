@@ -48,13 +48,6 @@ class Database:
         user = await self.col.find_one({'_id': int(id)})
         return user.get('file_id', None)
 
-    async def set_caption(self, id, caption):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'caption': caption}})
-
-    async def get_caption(self, id):
-        user = await self.col.find_one({'_id': int(id)})
-        return user.get('caption', None)
-
     async def get_user(self, user_id):
         user_data = await self.users.find_one({"id": user_id})
         return user_data
