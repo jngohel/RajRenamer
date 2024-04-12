@@ -16,7 +16,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 
 FORWARD_CHANNEL = [-1002101130781]
 
-@Client.on_message(filters.private & (filters.document | filters.audio | filters.video))
+@Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
     aksid = message.from_user.id
     aks = message.from_user.mention
@@ -25,12 +25,10 @@ async def rename_start(client, message):
             file = getattr(message, message.media.value)
             filename = file.file_name
             caption = message.caption
-            filesize = humanize.naturalsize(file.file_size)
-            dcid = FileId.decode(file.file_id).dc_id
             if file.file_size > 2000 * 1024 * 1024:
                 return await message.reply_text("<b>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</b>")
             try:
-                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
+                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code></b>"""
                 buttons = [[
 			InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
 			InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")
@@ -38,7 +36,7 @@ async def rename_start(client, message):
                 await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
             except FloodWait as e:
                 await sleep(e.value)
-                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code>\n\nꜰɪʟᴇ sɪᴢᴇ - <code>{filesize}</code>\n\nᴅᴄ ɪᴅ - <code>{dcid}</code></b>"""
+                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code></b>"""
                 buttons = [[
 			InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
                         InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")
@@ -82,8 +80,6 @@ async def refunc(client, message):
         button = [[InlineKeyboardButton("📁 ᴅᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload_document")]]
         if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
             button.append([InlineKeyboardButton("🎥 ᴠɪᴅᴇᴏ", callback_data = "upload_video")])
-        elif file.media == MessageMediaType.AUDIO:
-            button.append([InlineKeyboardButton("🎵 ᴀᴜᴅɪᴏ", callback_data = "upload_audio")])
         await message.reply(
             text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- `{new_file_name}`</b>",
             reply_to_message_id=file.id,
@@ -145,16 +141,6 @@ async def doc(bot, update):
             sent = await bot.send_video(
                 update.message.chat.id,
                 video=path,
-                caption=caption,
-                thumb=ph_path,
-                duration=duration,
-                progress=progress_for_pyrogram,
-                progress_args=("ᴜᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ 📥", ms, time.time())
-            )
-        elif type == "audio":
-            sent = await bot.send_audio(
-                update.message.chat.id,
-                audio=path,
                 caption=caption,
                 thumb=ph_path,
                 duration=duration,
