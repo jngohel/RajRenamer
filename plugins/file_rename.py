@@ -31,8 +31,7 @@ async def detect(client, message):
 
 @Client.on_message(filters.private & filters.reply)
 async def rename_file(client, message):
-    reply_message = message.reply_to_message
-    if isinstance(reply_message.reply_markup, ForceReply):
+    if (message.reply_to_message.reply_markup) and isinstance(message.reply_to_message.reply_markup, ForceReply):
         new_file_name = message.text 
         await message.delete() 
         media = await client.get_messages(message.chat.id, reply_message.id)
