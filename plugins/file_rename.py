@@ -36,23 +36,26 @@ async def rename_file(client, message):
         new_file_name = message.text 
         await message.delete() 
         msg = await client.get_messages(message.chat.id, reply_message.id)
-        file = msg.reply_to_message
-        media = getattr(file, file.media.value)
-        if not "." in new_file_name:
-            if "." in media.file_name:
-                extn = media.file_name.rsplit('.', 1)[-1]
-            else:
-                extn = "mkv"
-            new_name = new_file_name + "." + extn
-        await reply_message.delete()
-        button = [[InlineKeyboardButton("📁 ᴅᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload_document")]]
-        if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
-            button.append([InlineKeyboardButton("🎥 ᴠɪᴅᴇᴏ", callback_data = "upload_video")])
-        await message.reply(
-            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- `{new_file_name}`</b>",
-            reply_to_message_id=file.id,
-            reply_markup=InlineKeyboardMarkup(button)
-	)
+        if msg.reply_to_message:
+            file = msg.reply_to_message
+            media = getattr(file, file.media.value)
+            if not "." in new_file_name:
+                if "." in media.file_name:
+                    extn = media.file_name.rsplit('.', 1)[-1]
+                else:
+                    extn = "mkv"
+                new_name = new_file_name + "." + extn
+            await reply_message.delete()
+            button = [[InlineKeyboardButton("📁 ᴅᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload_document")]]
+            if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
+                button.append([InlineKeyboardButton("🎥 ᴠɪᴅᴇᴏ", callback_data = "upload_video")])
+            await message.reply(
+                text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- `{new_file_name}`</b>",
+                reply_to_message_id=file.id,
+                reply_markup=InlineKeyboardMarkup(button)
+            )
+        else:
+            await message.reply_text("Error: Unable to retrieve the original message.")
 
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):
