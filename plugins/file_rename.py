@@ -50,8 +50,9 @@ async def rename_file(client, message):
 
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):
-    new_file_name = update.message.text
-    new_filename = new_file_name.split(":-")[1]
+    new_name = update.message.text
+    name = new_name.split(":")
+    new_filename = name[1]
     file = update.message.reply_to_message
     ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
     file_path = f"downloads/{new_filename}"
