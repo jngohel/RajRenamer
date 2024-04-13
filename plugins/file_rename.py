@@ -70,8 +70,7 @@ async def doc(bot, update):
     except:
         pass
     ph_path = None
-    user_id = int(update.message.chat.id) 
-    media = getattr(file, file.media.value)
+    user_id = int(update.message.chat.id)
     c_thumb = await db.get_thumbnail(update.message.chat.id)
     caption = f"<b>{new_filename}</b>"
     if c_thumb:
