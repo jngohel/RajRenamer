@@ -16,52 +16,79 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 
 FORWARD_CHANNEL = [-1002101130781]
 
-@Client.on_message(filters.private & filters.document | filters.video)
-async def detect(client, message):
-    file = getattr(message, message.media.value)
+@Client.on_message(filters.private & (filters.document | filters.video))
+async def rename_start(client, message):
     aks_id = message.from_user.id
+    aks = message.from_user.mention
     if await db.has_premium_access(aks_id):
-        if file.file_size > 2000 * 1024 * 1024:
-            return await message.reply_text("<b>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</b>")
-        caption = message.caption
-        reply_markup = ForceReply(True)
-        await message.reply_text(f"<b><code>{caption}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>", reply_markup=reply_markup)
+        if message.media:
+            file = getattr(message, message.media.value)
+            caption = message.caption
+            if file.file_size > 2000 * 1024 * 1024:
+                return await message.reply_text("<b>🔆 sᴏʀʀʏ ʙʀᴏ ɪ ᴄᴀɴ'ᴛ ʀᴇɴᴀᴍᴇ 2ɢʙ+ ꜰɪʟᴇ 💢</b>")
+            try:
+                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code></b>"""
+                buttons = [[
+                    InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+			        InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")
+                ]]
+                await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
+            except FloodWait as e:
+                await sleep(e.value)
+                text = f"""<b>ᴡʜᴀᴛ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴍᴇ ᴛᴏ ᴅᴏ ᴡɪᴛʜ ᴛʜɪs ꜰɪʟᴇ??\n\nꜰɪʟᴇ ɴᴀᴍᴇ - <code>{caption}</code></b>"""
+                buttons = [[
+                    InlineKeyboardButton("ʀᴇɴᴀᴍᴇ", callback_data="rename"),
+                    InlineKeyboardButton("ᴄʟᴏsᴇ", callback_data="cancel")
+                ]]
+                await message.reply_text(text=text, reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(buttons))
     else:
         await message.reply_text("<i>ʏᴏᴜ ᴄᴀɴ'ᴛ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ᴏɴʟʏ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs ᴄᴀɴ ᴜsᴇ ɪᴛ 😐\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴜsᴇ ᴛʜɪs ʙᴏᴛ, ᴛʜᴇɴ ᴍsɢ ʜᴇʀᴇ ᴀɴᴅ ɢᴇᴛ ᴀᴄᴄᴇss - @Aks_support01_bot</i>")
 
+@Client.on_callback_query(filters.regex('rename'))
+async def rename(bot, update):
+    user_id = update.message.chat.id
+    date = update.message.date
+    await update.message.delete()
+    await update.message.reply_text("<b>ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ 😋</b>",	
+    reply_to_message_id=update.message.reply_to_message.id,  
+    reply_markup=ForceReply(True))	
+
 @Client.on_message(filters.private & filters.reply)
-async def rename_file(client, message):
+async def refunc(client, message):
     reply_message = message.reply_to_message
-    if (message.reply_to_message.reply_markup) and isinstance(message.reply_to_message.reply_markup, ForceReply):
+    if isinstance(reply_message.reply_markup, ForceReply):
         new_file_name = message.text 
         await message.delete() 
         msg = await client.get_messages(message.chat.id, reply_message.id)
         file = msg.reply_to_message
-        await reply_message.delete() 
-        button = [[
-            InlineKeyboardButton("📁 Document", callback_data="upload_document"),
-            InlineKeyboardButton("🎥 Video", callback_data="upload_video")
-        ]] 
+        media = getattr(file, file.media.value)
+        if not "." in new_file_name:
+            if "." in media.file_name:
+                extn = media.file_name.rsplit('.', 1)[-1]
+            else:
+                extn = "mkv"
+            new_name = new_file_name + "." + extn
+        await reply_message.delete()
+        button = [[InlineKeyboardButton("📁 ᴅᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload_document")]]
+        if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
+            button.append([InlineKeyboardButton("🎥 ᴠɪᴅᴇᴏ", callback_data = "upload_video")])
         await message.reply(
-            text=f"<b>Select the output file type\n\nFile name: `{new_file_name}`</b>",
-            reply_to_message_id=reply_message.id - 1,
+            text=f"<b>sᴇʟᴇᴄᴛ ᴛʜᴇ ᴏᴜᴛᴘᴜᴛ ꜰɪʟᴇ ᴛʏᴘᴇ\n\nꜰɪʟᴇ ɴᴀᴍᴇ:- `{new_file_name}`</b>",
+            reply_to_message_id=file.id,
             reply_markup=InlineKeyboardMarkup(button)
         )
 
 @Client.on_callback_query(filters.regex("upload"))
 async def doc(bot, update):
-    new_name = update.message.text
-    name = new_name.split(":")
-    new_filename = name[1]
-    message = update.message.reply_to_message
-    file = message.document or message.video
+    new_file_name = update.message.text
+    new_filename = new_file_name.split(":-")[1]
+    file = update.message.reply_to_message
     ms = await update.message.edit("<b>ᴛʀʏɪɴɢ ᴛᴏ ʀᴇɴᴀᴍɪɴɢ…</b>")
     file_path = f"downloads/{new_filename}"
     try:
-        path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
+        path = await bot.download_media(message=file, file_name=file_path, progress=progress_for_pyrogram, progress_args=("ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ…", ms, time.time()))                    
     except Exception as e:
         return await ms.edit(e)
-        print(e)
     duration = 0
     try:
         metadata = extractMetadata(createParser(file_path))
@@ -70,17 +97,19 @@ async def doc(bot, update):
     except:
         pass
     ph_path = None
-    user_id = int(update.message.chat.id)
+    user_id = int(update.message.chat.id) 
+    media = getattr(file, file.media.value)
     c_thumb = await db.get_thumbnail(update.message.chat.id)
-    caption = f"<b>{new_filename}</b>"
-    if c_thumb:
-        ph_path = await bot.download_media(c_thumb)
+    caption = f"<b>{new_filename}</b>" 
+    if (media.thumbs or c_thumb):
+        if c_thumb:
+            ph_path = await bot.download_media(c_thumb) 
+        else:
+            ph_path = await bot.download_media(media.thumbs[0].file_id)
         Image.open(ph_path).convert("RGB").save(ph_path)
         img = Image.open(ph_path)
         img.resize((320, 320))
         img.save(ph_path, "JPEG")
-    else:
-        ph_path = None
     await ms.edit("ᴛʀʏɪɴɢ ᴛᴏ ᴜᴘʟᴏᴀᴅɪɴɢ…")
     type = update.data.split("_")[1]
     try:
@@ -118,8 +147,9 @@ async def doc(bot, update):
         os.remove(ph_path)
 
 @Client.on_callback_query(filters.regex('cancel'))
-async def process_cancel(bot, update):
+async def cancel(bot, update):
     try:
         await update.message.delete()
     except:
         return
+
