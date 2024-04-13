@@ -44,7 +44,7 @@ async def rename_file(client, message):
         ]] 
         await message.reply(
             text=f"<b>Select the output file type\n\nFile name: `{new_file_name}`</b>",
-            reply_to_message_id=file.id,
+            reply_to_message_id=reply_message.id - 2,
             reply_markup=InlineKeyboardMarkup(button)
         )
 
