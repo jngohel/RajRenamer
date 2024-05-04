@@ -1,6 +1,7 @@
 import math, time
 from datetime import datetime
 from pytz import timezone
+import re
 from config import Config, Txt 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -102,3 +103,10 @@ async def get_seconds(time_string):
         return value * 86400 * 365
     else:
         return 0
+
+def extract_post_id(link):
+    match = re.search(r"/(\d+)/?$", link)
+    if match:
+        return int(match.group(1))
+    return None
+
