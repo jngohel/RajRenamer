@@ -1,29 +1,6 @@
-"""
-Apache License 2.0
-Copyright (c) 2022 @PYRO_BOTZ 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-Telegram Link : https://t.me/PYRO_BOTZ 
-Repo Link : https://github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT
-License Link : https://github.com/TEAM-PYRO-BOTZ/PYRO-RENAME-BOT/blob/main/LICENSE
-"""
-
 from config import Config
 from helper.database import db
-from helper.utils import get_seconds
+from helper.utils import get_seconds, extract_post_id
 from pyrogram.types import Message
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
@@ -115,6 +92,32 @@ async def give_premium_cmd_handler(client, message):
     else:
         await message.reply_text("Usage: /give_premium user_id time (e.g., '1day for days', '1hour for hours', or '1min for minutes', or '1month for months' or '1year for year')")
 
+@Client.on_message(filters.private & filters.command(["batch"]))
+async def batch_rename(client, message):
+    if len(message.command) != 3:
+        await message.reply("Usage: /batch start_post_link end_post_link")
+        return
+     
+    start_post_link = message.command[1]
+    end_post_link = message.command[2]
+    start_post_id = extract_post_id(start_post_link)
+    end_post_id = extract_post_id(end_post_link)
+
+    if start_post_id is None or end_post_id is None:
+        await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
+        return
+     
+    source_channel_id = -1001514489559
+    dest_channel_id = -1001862896786
+
+    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+    
+    batch_data[message.chat.id] = {
+        "start_post_id": start_post_id,
+        "end_post_id": end_post_id,
+        "source_channel_id": -1001514489559,
+        "dest_channel_id": -1001862896786,
+    }
 
 
 
