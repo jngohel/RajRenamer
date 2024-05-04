@@ -2,6 +2,8 @@ import math, time
 from datetime import datetime
 from pytz import timezone
 import re
+from PIL import Image
+import os
 from config import Config, Txt 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -109,4 +111,75 @@ def extract_post_id(link):
     if match:
         return int(match.group(1))
     return None
+
+def check_caption(caption):
+    caption = re.sub(r'@\w+\b', '', caption)
+    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
+    return caption.strip()
+    
+async def rename_in_video(bot, update, file_id):
+    new_filename = check_caption(update.caption)
+    file_path = f"downloads/{new_filename}"
+    message = update.reply_to_message
+    c_thumb = file_id
+    file = update.document or update.video or update.audio
+    AKS = await update.reply_text("renaming this file....")
+    ms = await AKS.edit("```Trying To Upload...```")
+    time.sleep(2)
+    c_time = time.time()
+    try:
+        path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("``` Trying To Download...```", ms, c_time))
+    except Exception as e:
+        await ms.edit(str(e))
+        return
+    splitpath = path.split("/downloads/")
+    dow_file_name = splitpath[1]
+    old_file_name = f"downloads/{dow_file_name}"
+    os.rename(old_file_name, file_path)
+    duration = 0
+    metadata = extractMetadata(createParser(file_path))
+    if metadata.has("duration"):
+        duration = metadata.get('duration').seconds
+    caption = f"<b>{new_filename}</b>"
+    thumb_path = await bot.download_media(c_thumb) 
+    try:
+       with Image.open(thumb_path) as img:
+	       img = img.convert("RGB")
+	       img.save(thumb_path, "JPEG")
+    except Exception as e:
+        await ms.edit(f"Thumbnail processing error: {str(e)}")
+    value = 2090000000
+    if value < file.file_size:
+        await ms.edit("```Trying To Upload...```")
+        try:
+            c_time = time.time()
+            file = await app.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
+            from_chat = file.chat.id
+            mg_id = file.id
+            time.sleep(2)
+            await bot.copy_message(update.from_user.id, from_chat, mg_id)
+            await ms.delete()
+            os.remove(file_path)
+            try:
+                os.remove(thumb_path)
+            except:
+                pass
+        except Exception as e:
+            await ms.edit(str(e))
+            os.remove(file_path)
+            try:
+                os.remove(thumb_path)
+            except:
+                return
+    else:
+        await ms.edit("```Trying To Upload...```")
+        try:
+            c_time = time.time()
+            await bot.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
+            os.remove(file_path)
+        except Exception as e:
+            await ms.edit(str(e))
+            os.remove(file_path)
+            return
+
 
