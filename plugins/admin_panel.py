@@ -1,6 +1,6 @@
 from config import Config
 from helper.database import db
-from helper.utils import get_seconds, extract_post_id
+from helper.utils import get_seconds
 from pyrogram.types import Message
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
