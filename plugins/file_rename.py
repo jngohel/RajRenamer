@@ -158,51 +158,59 @@ async def cancel(bot, update):
 
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
-    if len(message.command) != 3:
-        await message.reply("Usage: /batch start_post_link end_post_link")
-        return
-     
-    start_post_link = message.command[1]
-    end_post_link = message.command[2]
-    start_post_id = extract_post_id(start_post_link)
-    end_post_id = extract_post_id(end_post_link)
+    try:
+        if len(message.command) != 3:
+            await message.reply("Usage: /batch start_post_link end_post_link")
+            return
 
-    if start_post_id is None or end_post_id is None:
-        await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
-        return
-     
-    source_channel_id = -1002084343343
-    dest_channel_id = -1002101130781
+        start_post_link = message.command[1]
+        end_post_link = message.command[2]
+        start_post_id = extract_post_id(start_post_link)
+        end_post_id = extract_post_id(end_post_link)
 
-    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
-    
-    batch_data[message.chat.id] = {
-        "start_post_id": start_post_id,
-        "end_post_id": end_post_id,
-        "source_channel_id": -1002084343343,
-        "dest_channel_id": -1002101130781,
-    }
+        if start_post_id is None or end_post_id is None:
+            await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
+            return
+
+        source_channel_id = -1002084343343
+        dest_channel_id = -1002101130781
+
+        await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+
+        # Store batch data
+        batch_data[message.chat.id] = {
+            "start_post_id": start_post_id,
+            "end_post_id": end_post_id,
+            "source_channel_id": source_channel_id,
+            "dest_channel_id": dest_channel_id,
+        }
+    except Exception as e:
+        await message.reply_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_img_received(client, message):
-    chat_id = message.chat.id
-    if chat_id not in batch_data:
+    try:
+        chat_id = message.chat.id
+        if chat_id not in batch_data:
+            await message.reply_text("No batch data found.")
+            return
+
         file_id = str(message.photo.file_id)
         await db.set_thumbnail(message.chat.id, file_id)
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**") 
-        
-    data = batch_data.pop(chat_id)
-    
-    start_post_id = data["start_post_id"]
-    end_post_id = data["end_post_id"]
-    source_channel_id = data["source_channel_id"]
-    dest_channel_id = data["dest_channel_id"]   
-    thumbnail_file_id = str(message.photo.file_id)
+        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
 
-    await message.reply_text("renaming started...")
-    try:
+        data = batch_data.pop(chat_id)
+
+        start_post_id = data["start_post_id"]
+        end_post_id = data["end_post_id"]
+        source_channel_id = data["source_channel_id"]
+        dest_channel_id = data["dest_channel_id"]
+        thumbnail_file_id = str(message.photo.file_id)
+
+        await message.reply_text("Renaming started...")
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
             try:
@@ -216,7 +224,7 @@ async def thumbnail_img_received(client, message):
                 await client.delete_messages(dest_id, AKS.id + 1)
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-        await message.reply_text("renaming completed...")
+
+        await message.reply_text("Renaming completed.")
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
-
