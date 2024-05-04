@@ -219,9 +219,17 @@ async def thumbnail_img_received(client, message):
                     from_chat_id=source_id,
                     message_id=post_id
                 )
-                await rename_in_video(client, AKS, thumbnail_file_id)
-                await client.delete_messages(dest_id, AKS.id)
-                await client.delete_messages(dest_id, AKS.id + 1)
+                # Ensure message_text is not empty
+                message_text = "Your Updated Message Text Here"
+                if message_text.strip():
+                    await client.edit_message_text(
+                        chat_id=dest_id,
+                        message_id=AKS.id,
+                        text=message_text
+                    )
+                    await client.delete_messages(dest_id, AKS.id + 1)
+                else:
+                    print("Error: Message text is empty.")
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
 
