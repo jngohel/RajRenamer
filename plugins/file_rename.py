@@ -11,10 +11,12 @@ from pyrogram.errors import FloodWait
 from hachoir.parser import createParser
 from pyrogram.enums import MessageMediaType
 from hachoir.metadata import extractMetadata
-from helper.utils import progress_for_pyrogram, convert, humanbytes, extract_post_id
+from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 FORWARD_CHANNEL = [-1002101130781, -1002084343343]
+message_queue = asyncio.Queue()
+batch_data = {}
 
 @Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
@@ -152,33 +154,6 @@ async def cancel(bot, update):
         await update.message.delete()
     except:
         return
-
-@Client.on_message(filters.private & filters.command(["batch"]))
-async def batch_rename(client, message):
-    if len(message.command) != 3:
-        await message.reply("Usage: /batch start_post_link end_post_link")
-        return
-     
-    start_post_link = message.command[1]
-    end_post_link = message.command[2]
-    start_post_id = extract_post_id(start_post_link)
-    end_post_id = extract_post_id(end_post_link)
-
-    if start_post_id is None or end_post_id is None:
-        await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
-        return
-     
-    source_channel_id = -1001514489559
-    dest_channel_id = -1001862896786
-
-    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
-    
-    batch_data[message.chat.id] = {
-        "start_post_id": start_post_id,
-        "end_post_id": end_post_id,
-        "source_channel_id": -1001514489559,
-        "dest_channel_id": -1001862896786,
-    }
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_img_received(client, message):
