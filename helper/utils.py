@@ -1,8 +1,6 @@
 import math, time
 from datetime import datetime
 from pytz import timezone
-import re
-from PIL import Image
 import os
 from config import Config, Txt 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -105,76 +103,3 @@ async def get_seconds(time_string):
         return value * 86400 * 365
     else:
         return 0
-
-def extract_post_id(link):
-    match = re.search(r"/(\d+)/?$", link)
-    if match:
-        return int(match.group(1))
-    return None
-	
-async def check_caption(caption):
-    caption = re.sub(r'@\w+\b', '', caption)  # Remove usernames
-    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)  # Remove URLs
-    return caption.strip()
-
-async def rename_in_video(bot, update, file_id):
-    try:
-        new_filename = await check_caption(update.caption)
-        file_path = f"downloads/{new_filename}"
-        message = update.reply_to_message
-        c_thumb = file_id
-        file = None
-        
-        # Find the file in the message
-        if message.media:
-            file = message.media
-
-        if not file:
-            await update.reply("No media found in the message.")
-            return
-
-        AKS = await update.reply("Renaming this file...")
-        ms = await AKS.edit("Trying to upload...")
-        time.sleep(2)
-        c_time = time.time()
-
-        # Download the file
-        try:
-            path = await bot.download_media(file, file_path)
-        except Exception as e:
-            await ms.edit(str(e))
-            return
-
-        # Rename the file
-        old_file_name = f"{path}"
-        os.rename(old_file_name, file_path)
-
-        # Process thumbnail
-        thumb_path = None
-        if c_thumb:
-            thumb_path = f"downloads/thumb_{new_filename}.jpg"
-            try:
-                thumb_path = await bot.download_media(c_thumb)
-                with Image.open(thumb_path) as img:
-                    img = img.convert("RGB")
-                    img.save(thumb_path, "JPEG")
-            except Exception as e:
-                await ms.edit(f"Thumbnail processing error: {str(e)}")
-                return
-
-        # Upload the video
-        caption = f"<b>{new_filename}</b>"
-        duration = getattr(file, 'duration', 0)
-        try:
-            c_time = time.time()
-            await bot.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("Trying to upload...", ms, c_time))
-            os.remove(file_path)
-            if thumb_path:
-                os.remove(thumb_path)
-        except Exception as e:
-            await ms.edit(str(e))
-            os.remove(file_path)
-            if thumb_path:
-                os.remove(thumb_path)
-    except Exception as e:
-        await update.reply(f"Error: {str(e)}")
