@@ -20,20 +20,20 @@ FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 message_queue = asyncio.Queue()
 batch_data = {}
 
-def extract_post_id(link):
+async def extract_post_id(link):
     match = re.search(r"/(\d+)/?$", link)
     if match:
         return int(match.group(1))
     return None
 	
-def check_caption(caption):
+async def check_caption(caption):
     caption = re.sub(r'@\w+\b', '', caption)  # Remove usernames
     caption = re.sub(r'http[s]?:\/\/\S+', '', caption)  # Remove URLs
     return caption.strip()
 
-def rename_in_video(bot, update, file_id):
+async def rename_in_video(bot, update, file_id):
     try:
-        new_filename = check_caption(update.caption)
+        new_filename = await check_caption(update.caption)
         file_path = f"downloads/{new_filename}"
         message = update.reply_to_message
         c_thumb = file_id
