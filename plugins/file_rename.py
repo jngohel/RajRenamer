@@ -25,7 +25,7 @@ def extract_post_id(link):
         return int(match.group(1))
     return None
 	
-def def check_caption(caption):
+def check_caption(caption):
     caption = re.sub(r'@\w+\b', '', caption)  # Remove usernames
     caption = re.sub(r'http[s]?:\/\/\S+', '', caption)  # Remove URLs
     return caption.strip()
