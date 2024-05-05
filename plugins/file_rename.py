@@ -239,8 +239,8 @@ async def batch_rename(client, message):
 
         start_post_link = message.command[1]
         end_post_link = message.command[2]
-        start_post_id = extract_post_id(start_post_link)
-        end_post_id = extract_post_id(end_post_link)
+        start_post_id = await extract_post_id(start_post_link)
+        end_post_id = await extract_post_id(end_post_link)
 
         if start_post_id is None or end_post_id is None:
             await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
