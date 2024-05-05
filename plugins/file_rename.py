@@ -33,7 +33,7 @@ def check_caption(caption):
 
 def rename_in_video(bot, update, file_id):
     try:
-        new_filename = await check_caption(update.caption)
+        new_filename = check_caption(update.caption)
         file_path = f"downloads/{new_filename}"
         message = update.reply_to_message
         c_thumb = file_id
