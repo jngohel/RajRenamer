@@ -260,6 +260,7 @@ async def batch_rename(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
 
+# Thumbnail handling
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_img_received(client, message):
     try:
