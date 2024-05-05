@@ -31,7 +31,7 @@ def check_caption(caption):
     caption = re.sub(r'http[s]?:\/\/\S+', '', caption)  # Remove URLs
     return caption.strip()
 
-async def rename_in_video(bot, update, file_id):
+def rename_in_video(bot, update, file_id):
     try:
         new_filename = await check_caption(update.caption)
         file_path = f"downloads/{new_filename}"
