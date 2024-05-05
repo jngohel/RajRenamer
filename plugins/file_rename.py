@@ -33,6 +33,10 @@ async def check_caption(caption):
 
 async def rename_in_video(bot, update, file_id):
     new_filename = await check_caption(update.caption)
+    if not new_filename:  # Check if new_filename is empty
+        file_name_without_extension = os.path.splitext(os.path.basename(update.document.file_name))[0]  # Get the file name without extension
+        new_filename = file_name_without_extension  # Set new_filename to the file name without extension
+    
     file_path = f"downloads/{new_filename}"
     message = update.reply_to_message
     c_thumb = file_id
@@ -41,13 +45,13 @@ async def rename_in_video(bot, update, file_id):
     ms = await AK.edit("```Trying To Upload...```")
     time.sleep(2)
     c_time = time.time()
-
+    
     try:
         path = await bot.download_media(message=file, progress=progress_for_pyrogram, progress_args=("``` Trying To Download...```", ms, c_time))
     except Exception as e:
         await ms.edit(str(e))
         return
-
+    
     splitpath = path.split("/downloads/")
     dow_file_name = splitpath[1]
     old_file_name = f"downloads/{dow_file_name}"
@@ -58,12 +62,11 @@ async def rename_in_video(bot, update, file_id):
     if metadata.has("duration"):
         duration = metadata.get('duration').seconds
 
-    caption = f"<b>{new_filename}</b>"
     thumb_path = await bot.download_media(c_thumb) 
     try:
-       with Image.open(thumb_path) as img:
-	       img = img.convert("RGB")
-	       img.save(thumb_path, "JPEG")
+        with Image.open(thumb_path) as img:
+            img = img.convert("RGB")
+            img.save(thumb_path, "JPEG")
     except Exception as e:
         await ms.edit(f"Thumbnail processing error: {str(e)}")
 
@@ -72,7 +75,7 @@ async def rename_in_video(bot, update, file_id):
         await ms.edit("```Trying To Upload...```")
         try:
             c_time = time.time()
-            file = await app.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
+            file = await app.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=new_filename, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
             from_chat = file.chat.id
             mg_id = file.id
             time.sleep(2)
@@ -94,7 +97,7 @@ async def rename_in_video(bot, update, file_id):
         await ms.edit("```Trying To Upload...```")
         try:
             c_time = time.time()
-            await bot.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=caption, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
+            await bot.send_video(update.chat.id, video=file_path, thumb=thumb_path, duration=duration, caption=new_filename, progress=progress_for_pyrogram, progress_args=("```Trying To Uploading```", ms, c_time))
             os.remove(file_path)
         except Exception as e:
             await ms.edit(str(e))
