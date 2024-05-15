@@ -16,6 +16,7 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, Message
 
+IS_VIDEO_MODE = True
 FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 message_queue = asyncio.Queue()
 batch_data = {}
@@ -41,29 +42,22 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
         await status_message.edit(f"Error during download: {str(e)}")
         return
     duration = 0
-    if message.video or message.document or message.audio:
+    if message.video or message.document:
         metadata = extractMetadata(createParser(download_path))
         if metadata.has("duration"):
             duration = metadata.get('duration').seconds
     thumb_path = None
-    if message.video and message.document and thumbnail_file_id:
+    if message.video and thumbnail_file_id:
         thumb_path = await bot.download_media(thumbnail_file_id)
         with Image.open(thumb_path) as img:
             img = img.convert("RGB")
             img.save(thumb_path, "JPEG")
     try:
-        if message.video:
+        if IS_VIDEO_MODE:
             await bot.send_video(
                 chat_id=message.chat.id,
                 video=download_path,
                 thumb=thumb_path,
-                caption=new_filename,
-                duration=duration
-            )
-        elif message.audio:
-            await bot.send_audio(
-                chat_id=message.chat.id,
-                audio=download_path,
                 caption=new_filename,
                 duration=duration
             )
