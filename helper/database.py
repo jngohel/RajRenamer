@@ -18,16 +18,16 @@ class Database:
             caption=None
         )
 
-    async def is_user_exist(self, id):
+    def is_user_exist(self, id):
         user = usrcol.find_one({'_id': int(id)})
         return bool(user)
 
     async def add_user(self, b, m):
-        u = m.from_user
-        if not await is_user_exist(u.id):
-            user = new_user(u.id)
+        id = m.from_user
+        if not is_user_exist(id.id):
+            user = new_user(id.id)
             usrcol.insert_one(user)            
-            await send_log(b, u)
+            await send_log(b, id)
 
     async def total_users_count(self):
         count = usrcol.count_documents({})
@@ -47,7 +47,7 @@ class Database:
         user = usrcol.find_one({'_id': int(id)})
         return user.get('file_id', None)
 
-    async def get_user(self, user_id):
+    def get_user(self, user_id):
         user_data = premium.find_one({"id": user_id})
         return user_data
 
@@ -55,7 +55,7 @@ class Database:
         premium.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
-        user_data = await get_user(user_id)
+        user_data = get_user(user_id)
         if user_data:
             expiry_time = user_data.get("expiry_time")
             if expiry_time is None:
