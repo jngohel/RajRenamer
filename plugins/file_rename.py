@@ -38,6 +38,7 @@ async def extract_post_id(link):
 async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filename):
     file_path = f"downloads/{new_filename}"
     file = message.document or message.video
+    user_id = message.from_user.id
     status_message = await message.reply_text("Renaming this file...")
     try:
         download_path = await bot.download_media(message=file, file_name=file_path)
@@ -56,7 +57,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             img = img.convert("RGB")
             img.save(thumb_path, "JPEG")
     try:
-        if IS_VIDEO_MODE:
+        if db.get_mode_status(user_id):
             await bot.send_video(
                 chat_id=message.chat.id,
                 video=download_path,
