@@ -158,12 +158,11 @@ async def rename_all_posts(client, message):
         batch_data[message.chat.id] = {
             "start_post_id": 1,
             "end_post_id": end_post_id,
-            "source_channel_id": source_channel_id,  # You need to define source_channel_id and dest_channel_id
-            "dest_channel_id": dest_channel_id       # according to your implementation
+            "source_channel_id": source_channel_id,
+            "dest_channel_id": dest_channel_id
         }
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
-
 	
 #@Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
