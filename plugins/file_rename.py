@@ -34,7 +34,7 @@ async def extract_post_id(link):
 
 async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filename):
     file_path = f"downloads/{new_filename}"
-    file = message.document or message.video or message.audio
+    file = message.document or message.video
     status_message = await message.reply_text("Renaming this file...")
     try:
         download_path = await bot.download_media(message=file, file_name=file_path)
@@ -65,6 +65,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             await bot.send_document(
                 chat_id=message.chat.id,
                 document=download_path,
+	        thumb=thumb_path,
                 caption=new_filename
             )
         await status_message.delete()
