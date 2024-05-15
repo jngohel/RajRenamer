@@ -25,7 +25,7 @@ class Database:
     async def add_user(self, b, m):
         id = m.from_user
         if not self.is_user_exist(id.id):
-            user = new_user(id.id)
+            user = self.new_user(id.id)
             usrcol.insert_one(user)            
             await send_log(b, id)
 
