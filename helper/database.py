@@ -18,13 +18,13 @@ class Database:
             caption=None
         )
 
-    def is_user_exist(self, id):
+    async def is_user_exist(self, id):
         user = usrcol.find_one({'_id': int(id)})
         return bool(user)
 
     async def add_user(self, b, m):
         id = m.from_user
-        if not is_user_exist(id.id):
+        if not self.is_user_exist(id.id):
             user = new_user(id.id)
             usrcol.insert_one(user)            
             await send_log(b, id)
