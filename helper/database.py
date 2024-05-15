@@ -1,11 +1,11 @@
 from pymongo import MongoClient
-from config import DB_URL, DB_NAME
+from config import Config
 from .utils import send_log
 import datetime
 import time
 
-myclient = MongoClient(DB_URL)
-mydb = myclient[DB_NAME]
+myclient = MongoClient(Config.DB_URL)
+mydb = myclient[Config.DB_NAME]
 usrcol = mydb['users']
 premium = mydb['premium_users']
 
