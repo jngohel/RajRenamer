@@ -145,7 +145,7 @@ async def thumbnail_received(client, message):
 
 @Client.on_message(filters.private & filters.command(["rename_all"]))
 async def all_rename(bot, message):
-    if len(message.command) != 3:
+    if len(message.command) != 2:
         await message.reply("Usage: /rename_all last_post_link")
         return
     end_post_link = message.command[1]
