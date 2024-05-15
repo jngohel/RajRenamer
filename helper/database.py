@@ -80,7 +80,7 @@ class Database:
     async def get_expired(self, current_time):
         expired_users = []
         if data := premium.find({"expiry_time": {"$lt": current_time}}):
-            async for user in data:
+            for user in data:
                 expired_users.append(user)
         return expired_users
 
