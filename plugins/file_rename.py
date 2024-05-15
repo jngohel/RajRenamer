@@ -119,6 +119,7 @@ async def thumbnail_received(client, message):
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
     thumbnail_file_id = str(message.photo.file_id)
+    processed_files = 0  
     await message.reply_text("Renaming started...")
     try:
         for post_id in range(start_post_id, end_post_id + 1):
@@ -138,6 +139,8 @@ async def thumbnail_received(client, message):
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
                 await client.delete_messages(dest_id, copied_message.id + 1)
+                processed_files += 1
+                await message.reply_text(f"Renaming in progress: {processed_files}/{end_post_id - start_post_id + 1}")
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
         await message.reply_text("Renaming completed...")
