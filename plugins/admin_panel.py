@@ -8,7 +8,27 @@ import os, sys, time, asyncio, logging, datetime
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
- 
+
+@Client.on_message(filters.private & filters.command("set_video"))
+async def set_mode(client, message):
+    user_id = message.from_user.id
+    bot_id = client.me.id
+    if user_id not in Config.ADMIN:
+        await message.delete()
+        return
+    try:
+        option = (message.text).split(" ", 1)[1].lower()
+    except IndexError:
+        return await message.reply_text("<b>💔 Please specify 'on' or 'off' after the command.</b>")
+    if option in ['on', 'true']:
+        await db.update_mode_status(bot_id, enable=True)
+        await message.reply_text("<b>✅️ ᴘᴍ ꜱᴇᴀʀᴄʜ ᴇɴᴀʙʟᴇᴅ ꜰʀᴏᴍ ɴᴏᴡ ᴜꜱᴇʀꜱ ᴀʙʟᴇ ᴛᴏ ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ ɪɴ ʙᴏᴛ ᴘᴍ.</b>")
+    elif option in ['off', 'false']:
+        await db.update_mode_status(bot_id, enable=False)
+        await message.reply_text("<b>❌️ ᴘᴍ ꜱᴇᴀʀᴄʜ ᴅɪꜱᴀʙʟᴇᴅ, ɴᴏ ᴏɴᴇ ᴜꜱᴇʀꜱ ᴀʙʟᴇ ᴛᴏ ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ ɪɴ ʙᴏᴛ ᴘᴍ.</b>")
+    else:
+        await message.reply_text("<b>💔 Invalid option. Please specify 'on' or 'off' after the command.</b>")
+     
 @Client.on_message(filters.command(["stats", "status"]) & filters.user(Config.ADMIN))
 async def get_stats(bot, message):
     total_users = await db.total_users_count()
