@@ -32,26 +32,29 @@ async def extract_post_id(link):
     return None
 
 async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filename):
-    file_path = f"downloads/{new_filename}"
-    file = message.document or message.video or message.audio
-    status_message = await message.reply_text("Renaming this file...")
+    print(f"Renaming and uploading file: {new_filename}")
+
+    # Rest of the function code...
+
     try:
+        # Download the file
         download_path = await bot.download_media(message=file, file_name=file_path)
-    except Exception as e:
-        await status_message.edit(f"Error during download: {str(e)}")
-        return
-    duration = 0
-    if message.video or message.audio:
+        print(f"File downloaded to: {download_path}")
+
+        # Extract metadata and duration
         metadata = extractMetadata(createParser(download_path))
         if metadata.has("duration"):
             duration = metadata.get('duration').seconds
-    thumb_path = None
-    if message.video and thumbnail_file_id:
-        thumb_path = await bot.download_media(thumbnail_file_id)
-        with Image.open(thumb_path) as img:
-            img = img.convert("RGB")
-            img.save(thumb_path, "JPEG")
-    try:
+
+        # Process thumbnail
+        if message.video and thumbnail_file_id:
+            thumb_path = await bot.download_media(thumbnail_file_id)
+            with Image.open(thumb_path) as img:
+                img = img.convert("RGB")
+                img.save(thumb_path, "JPEG")
+            print(f"Thumbnail processed and saved to: {thumb_path}")
+
+        # Upload the file
         if message.video:
             await bot.send_video(
                 chat_id=message.chat.id,
@@ -73,14 +76,21 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
                 document=download_path,
                 caption=new_filename
             )
+        print("File uploaded successfully")
+
+        # Delete temporary files
+        if os.path.exists(download_path):
+            os.remove(download_path)
+            print(f"Downloaded file removed: {download_path}")
+        if thumb_path and os.path.exists(thumb_path):
+            os.remove(thumb_path)
+            print(f"Thumbnail file removed: {thumb_path}")
+
+        # Delete status message
         await status_message.delete()
     except Exception as e:
         await status_message.edit(f"Error during upload: {str(e)}")
-    finally:
-        if os.path.exists(download_path):
-            os.remove(download_path)
-        if thumb_path and os.path.exists(thumb_path):
-            os.remove(thumb_path)
+        print(f"Error during upload: {str(e)}")
 
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
