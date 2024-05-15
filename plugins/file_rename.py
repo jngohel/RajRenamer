@@ -144,20 +144,26 @@ async def thumbnail_received(client, message):
         await status_message.edit_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.command(["rename_all"]))
-async def all_rename(bot, message):
-    if len(message.command) != 2:
-        await message.reply("Usage: /rename_all last_post_link")
-        return
-    end_post_link = message.command[1]
-    start_post_id = 1
-    end_post_id = extract_post_id(end_post_link)
-    await message.reply_text("Please provide a thumbnail image for the Renameing. Send a photo.")
-    batch_data[message.chat.id] = {
-        "start_post_id": start_post_id,
-        "end_post_id": end_post_id,
-        "source_channel_id": source_channel_id,
-        "dest_channel_id": dest_channel_id
-    }
+async def rename_all_posts(client, message):
+    try:
+        if len(message.command) != 2:
+            await message.reply("Usage: /rename_all end_post_link")
+            return
+        end_post_link = message.command[1]
+        end_post_id = await extract_post_id(end_post_link)
+        if end_post_id is None:
+            await message.reply("Invalid post link provided. Usage: /rename_all end_post_link")
+            return
+        await message.reply_text("Please provide a thumbnail image for renaming all posts. Send a photo.")
+        batch_data[message.chat.id] = {
+            "start_post_id": 1,
+            "end_post_id": end_post_id,
+            "source_channel_id": source_channel_id,  # You need to define source_channel_id and dest_channel_id
+            "dest_channel_id": dest_channel_id       # according to your implementation
+        }
+    except Exception as e:
+        await message.reply_text(f"Error: {str(e)}")
+
 	
 #@Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
