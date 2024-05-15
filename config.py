@@ -11,7 +11,7 @@ class Config(object):
     ADMIN       = [int(admin) if id_pattern.search(admin) else admin for admin in os.environ.get('ADMIN', '1030335104').split()]
     FORCE_SUB   = os.environ.get("FORCE_SUB", "Aksbackup") 
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001769642119"))
-     
+    IS_VIDEO_MODE = True
     WEBHOOK = bool(os.environ.get("WEBHOOK", True))   
 
 class Txt(object):
