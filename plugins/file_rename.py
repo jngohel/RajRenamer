@@ -119,8 +119,11 @@ async def thumbnail_received(client, message):
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
     thumbnail_file_id = str(message.photo.file_id)
-    processed_files = 0  
-    await message.reply_text("Renaming started...")
+    
+    # Initialize counter
+    processed_files = 0
+    
+    status_message = await message.reply_text("Renaming started... 0/{}".format(end_post_id - start_post_id + 1))
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
@@ -139,13 +142,17 @@ async def thumbnail_received(client, message):
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
                 await client.delete_messages(dest_id, copied_message.id + 1)
+                
+                # Increment counter
                 processed_files += 1
-                await message.reply_text(f"Renaming in progress: {processed_files}/{end_post_id - start_post_id + 1}")
+                
+                # Show progress message in edit mode
+                await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-        await message.reply_text("Renaming completed...")
+        await status_message.edit_text("Renaming completed...")
     except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
+        await status_message.edit_text(f"Error: {str(e)}")
 
 #@Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
