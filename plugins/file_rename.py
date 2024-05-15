@@ -16,7 +16,6 @@ from hachoir.metadata import extractMetadata
 from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, Message
 
-IS_VIDEO_MODE = False
 FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 message_queue = asyncio.Queue()
 batch_data = {}
@@ -130,7 +129,7 @@ async def thumbnail_received(client, message):
                     message_id=post_id
                 )
 		if not copied_message:
-                    await message.reply_text(f"Failed to copy message {post_id}")
+		    raise Exception(f"Failed to copy message {post_id}")
                 if copied_message.caption:
                     new_filename = await check_caption(copied_message.caption)
                 else:
