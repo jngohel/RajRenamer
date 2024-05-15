@@ -41,12 +41,12 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
         await status_message.edit(f"Error during download: {str(e)}")
         return
     duration = 0
-    if message.video or message.audio:
+    if message.video or message.document or message.audio:
         metadata = extractMetadata(createParser(download_path))
         if metadata.has("duration"):
             duration = metadata.get('duration').seconds
     thumb_path = None
-    if thumbnail_file_id:
+    if message.video or message.document and thumbnail_file_id:
         thumb_path = await bot.download_media(thumbnail_file_id)
         with Image.open(thumb_path) as img:
             img = img.convert("RGB")
@@ -139,14 +139,6 @@ async def thumbnail_received(client, message):
                     new_filename = await check_caption(copied_message.caption)
                 else:
                     new_filename = f"renamed_{post_id}"
-                
-                # Download and include the thumbnail for all message types
-                thumb_path = None
-                if thumbnail_file_id:
-                    thumb_path = await client.download_media(thumbnail_file_id)
-                    with Image.open(thumb_path) as img:
-                        img = img.convert("RGB")
-                        img.save(thumb_path, "JPEG")
                 
                 await rename_and_upload(client, copied_message, thumb_path, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
