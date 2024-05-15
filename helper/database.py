@@ -1,16 +1,15 @@
-import motor.motor_asyncio
-from config import Config
+from pymongo import MongoClient
+from config import DB_URL, DB_NAME
 from .utils import send_log
 import datetime
 import time
 
-class Database:
+myclient = MongoClient(DB_URL)
+mydb = myclient[DB_NAME]
+usrcol = mydb['users']
+premium = mydb['premium_users']
 
-    def __init__(self, uri, database_name):
-        self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
-        self.db = self._client[database_name]
-        self.col = self.db.user
-        self.users = self.db.uersz
+class Database:
 
     def new_user(self, id):
         return dict(
@@ -19,80 +18,78 @@ class Database:
             caption=None
         )
 
-    async def add_user(self, b, m):
+    async def add_user(b, m):
         u = m.from_user
-        if not await self.is_user_exist(u.id):
-            user = self.new_user(u.id)
-            await self.col.insert_one(user)            
+        if not await is_user_exist(u.id):
+            user = new_user(u.id)
+            usrcol.insert_one(user)            
             await send_log(b, u)
 
-    async def is_user_exist(self, id):
-        user = await self.col.find_one({'_id': int(id)})
+    async def is_user_exist(id):
+        user = usrcol.find_one({'_id': int(id)})
         return bool(user)
 
-    async def total_users_count(self):
-        count = await self.col.count_documents({})
+    async def total_users_count():
+        count = usrcol.count_documents({})
         return count
 
-    async def get_all_users(self):
-        all_users = self.col.find({})
+    async def get_all_users():
+        all_users = usrcol.find({})
         return all_users
 
-    async def delete_user(self, user_id):
-        await self.col.delete_many({'_id': int(user_id)})
+    async def delete_user(user_id):
+        usrcol.delete_many({'_id': int(user_id)})
     
-    async def set_thumbnail(self, id, file_id):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'file_id': file_id}})
+    async def set_thumbnail(id, file_id):
+        usrcol.update_one({'_id': int(id)}, {'$set': {'file_id': file_id}})
 
-    async def get_thumbnail(self, id):
-        user = await self.col.find_one({'_id': int(id)})
+    async def get_thumbnail(id):
+        user = usrcol.find_one({'_id': int(id)})
         return user.get('file_id', None)
 
-    async def get_user(self, user_id):
-        user_data = await self.users.find_one({"id": user_id})
+    async def get_user(user_id):
+        user_data = premium.find_one({"id": user_id})
         return user_data
 
-    async def update_user(self, user_data):
-        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+    async def update_user(user_data):
+        premium.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
-    async def has_premium_access(self, user_id):
-        user_data = await self.get_user(user_id)
+    async def has_premium_access(user_id):
+        user_data = await get_user(user_id)
         if user_data:
             expiry_time = user_data.get("expiry_time")
             if expiry_time is None:
-                # User previously used the free trial, but it has ended.
                 return False
             elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
                 return True
             else:
-                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                premium.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
         return False
     
-    async def update_user(self, user_data):
-        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+    async def update_user(user_data):
+        await premium.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
-    async def update_one(self, filter_query, update_data):
+    async def update_one(filter_query, update_data):
         try:
-            # Assuming self.client and self.users are set up properly
-            result = await self.users.update_one(filter_query, update_data)
+            result = premium.update_one(filter_query, update_data)
             return result.matched_count == 1
         except Exception as e:
             print(f"Error updating document: {e}")
             return False
 
-    async def get_expired(self, current_time):
+    async def get_expired(current_time):
         expired_users = []
-        if data := self.users.find({"expiry_time": {"$lt": current_time}}):
+        if data := premium.find({"expiry_time": {"$lt": current_time}}):
             async for user in data:
                 expired_users.append(user)
         return expired_users
 
-    async def remove_premium_access(self, user_id):
-        return await self.update_one(
+    async def remove_premium_access(user_id):
+        return await premium.update_one(
             {"id": user_id}, {"$set": {"expiry_time": None}}
             )
 
-db = Database(Config.DB_URL, Config.DB_NAME)
+db = Database()
 
 
 
