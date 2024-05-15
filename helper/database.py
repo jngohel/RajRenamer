@@ -47,6 +47,20 @@ class Database:
         user = usrcol.find_one({'_id': int(id)})
         return user.get('file_id', None)
 
+    async def get_mode_status(self, id):
+        bot = usrcol.find_one({'id': id})
+        if bot and bot.get('is_video'):
+            return bot['is_video']
+        else:
+            return Config.IS_VIDEO
+
+    async def update_mode_status(self, id, enable):
+        bot = usrcol.find_one({'id': int(id)})
+        if bot:
+            usrcol.update_one({'id': int(id)}, {'$set': {'is_video': enable}})
+        else:
+            usrcol.insert_one({'id': int(id), 'is_video': enable})
+
     def get_user(self, user_id):
         user_data = premium.find_one({"id": user_id})
         return user_data
