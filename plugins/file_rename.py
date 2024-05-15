@@ -140,7 +140,7 @@ async def thumbnail_received(client, message):
                 else:
                     new_filename = f"renamed_{post_id}"
                 
-                await rename_and_upload(client, copied_message, new_filename)
+                await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
                 await client.delete_messages(dest_id, copied_message.id + 1)
                 
