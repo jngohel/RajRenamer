@@ -140,7 +140,7 @@ async def thumbnail_received(client, message):
                 await client.delete_messages(dest_id, copied_message.id + 1)
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-       await message.reply_text("Renaming completed...")
+        await message.reply_text("Renaming completed...")
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
 
