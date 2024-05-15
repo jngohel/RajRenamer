@@ -36,7 +36,7 @@ async def broadcast_handler(bot: Client, m: Message):
     success = 0
     start_time = time.time()
     total_users = await db.total_users_count()
-    async for user in all_users:
+    for user in all_users:
         sts = await send_msg(user['_id'], broadcast_msg)
         if sts == 200:
            success += 1
