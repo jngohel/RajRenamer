@@ -139,6 +139,14 @@ async def thumbnail_received(client, message):
                     new_filename = await check_caption(copied_message.caption)
                 else:
                     new_filename = f"renamed_{post_id}"
+
+		thumb_path = None
+                if thumbnail_file_id:
+                    thumb_path = await client.download_media(thumbnail_file_id)
+                    with Image.open(thumb_path) as img:
+                        img = img.convert("RGB")
+                        img.save(thumb_path, "JPEG")
+			    
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
                 await client.delete_messages(dest_id, copied_message.id + 1)
