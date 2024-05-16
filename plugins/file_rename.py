@@ -20,9 +20,6 @@ FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 message_queue = asyncio.Queue()
 batch_data = {}
 
-source_channel_id = -1002085038189
-dest_channel_id = -1002015035745
-
 async def check_caption(caption):
     caption = re.sub(r'@\w+\b', '', caption)
     caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
@@ -94,7 +91,9 @@ async def batch_rename(client, message):
             await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
             return
         await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
-        batch_data[message.chat.id] = {
+        source_channel_id = -1002085038189
+        dest_channel_id = -1002015035745
+	batch_data[message.chat.id] = {
             "start_post_id": start_post_id,
             "end_post_id": end_post_id,
             "source_channel_id": source_channel_id,
