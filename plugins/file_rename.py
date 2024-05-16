@@ -41,17 +41,20 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
     except Exception as e:
         await status_message.edit(f"Error during download: {str(e)}")
         return
+    
     duration = 0
     if message.video or message.document:
         metadata = extractMetadata(createParser(download_path))
         if metadata.has("duration"):
             duration = metadata.get('duration').seconds
+    
     thumb_path = None
     if message.video and thumbnail_file_id:
         thumb_path = await bot.download_media(thumbnail_file_id)
         with Image.open(thumb_path) as img:
             img = img.convert("RGB")
             img.save(thumb_path, "JPEG")
+    
     try:
         if db.get_mode_status(user_id):
             await bot.send_video(
@@ -65,7 +68,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             await bot.send_document(
                 chat_id=message.chat.id,
                 document=download_path,
-	        thumb=thumb_path,
+                thumb=thumb_path,
                 caption=new_filename
             )
         await status_message.delete()
@@ -76,7 +79,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             os.remove(download_path)
         if thumb_path and os.path.exists(thumb_path):
             os.remove(thumb_path)
-		
+
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     try:
@@ -105,6 +108,7 @@ async def batch_rename(client, message):
             "dest_channel_id": dest_channel_id,
         }
     except Exception as e:
+        print(f"Error in batch_rename: {str(e)}")
         await message.reply_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
@@ -131,14 +135,15 @@ async def thumbnail_received(client, message):
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
             try:
+                print(f"Attempting to copy message {post_id} from {source_id} to {dest_id}")
                 copied_message = await client.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
                     message_id=post_id
                 )
                 
-                if not copied_message:  # Check if copied_message is None or invalid
-                    raise Exception(f"Failed to copy message {post_id}")
+                if not copied_message:
+                    raise Exception(f"Failed to copy message {post_id}. Copied message is None.")
                 
                 if copied_message.caption:
                     new_filename = await check_caption(copied_message.caption)
@@ -156,11 +161,13 @@ async def thumbnail_received(client, message):
                 await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
             
             except Exception as e:
+                print(f"Error processing post {post_id}: {str(e)}")
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
         
         await status_message.edit_text("Renaming completed...")
     
     except Exception as e:
+        print(f"Error in thumbnail_received: {str(e)}")
         await status_message.edit_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.command(["rename_all"]))
