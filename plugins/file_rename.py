@@ -90,14 +90,14 @@ async def batch_rename(client, message):
         if start_post_id is None or end_post_id is None:
             await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
             return
-        await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
         source_channel_id = -1002085038189
         dest_channel_id = -1002015035745
-	batch_data[message.chat.id] = {
+        await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+        batch_data[message.chat.id] = {
             "start_post_id": start_post_id,
             "end_post_id": end_post_id,
             "source_channel_id": source_channel_id,
-            "dest_channel_id": dest_channel_id
+            "dest_channel_id": dest_channel_id,
         }
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
