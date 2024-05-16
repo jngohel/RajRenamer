@@ -86,8 +86,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
 @Client.on_message(filters.channel & filters.chat(source_channel_id))
 async def auto_rename_and_forward(client, message):
     try:
-	chat_id = message.chat.id
-        thumbnail_file_id = await db.get_thumbnail(chat_id)
+        thumbnail_file_id = await db.get_thumbnail(message.from_user.id)
         if not thumbnail_file_id:
             await message.reply_text("No thumbnail found in the database.")
             return
