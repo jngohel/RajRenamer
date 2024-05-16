@@ -20,6 +20,8 @@ FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 message_queue = asyncio.Queue()
 batch_data = {}
 
+IS_VIDEO_MODE = True
+
 async def check_caption(caption):
     caption = re.sub(r'@\w+\b', '', caption)
     caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
@@ -53,7 +55,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             img = img.convert("RGB")
             img.save(thumb_path, "JPEG")
     try:
-        if db.get_mode_status(user_id):
+        if IS_VIDEO_MODE:
             await bot.send_video(
                 chat_id=message.chat.id,
                 video=download_path,
