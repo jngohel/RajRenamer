@@ -109,17 +109,21 @@ async def thumbnail_received(client, message):
     if chat_id not in batch_data:
         await message.reply_text("No batch data found. Please start a batch operation first.")
         return
+    
     data = batch_data.pop(chat_id)
     start_post_id = data["start_post_id"]
     end_post_id = data["end_post_id"]
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
     thumbnail_file_id = str(message.photo.file_id)
+    
     processed_files = 0  
     status_message = await message.reply_text("Renaming started... 0/{}".format(end_post_id - start_post_id + 1))
+    
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
+        
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
             try:
@@ -128,20 +132,28 @@ async def thumbnail_received(client, message):
                     from_chat_id=source_id,
                     message_id=post_id
                 )
-		if not copied_message:
-		    print(f"Failed to copy message {post_id}")
+                
+                if not copied_message:  # Check if copied_message is None or invalid
+                    raise Exception(f"Failed to copy message {post_id}")
+                
                 if copied_message.caption:
                     new_filename = await check_caption(copied_message.caption)
                 else:
                     new_filename = f"renamed_{post_id}"      
+                
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
+                
                 await client.delete_messages(dest_id, copied_message.id)
                 await client.delete_messages(dest_id, copied_message.id + 1)
+                
                 processed_files += 1
                 await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
+            
             except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+        
         await status_message.edit_text("Renaming completed...")
+    
     except Exception as e:
         await status_message.edit_text(f"Error: {str(e)}")
 
