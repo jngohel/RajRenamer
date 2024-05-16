@@ -120,10 +120,10 @@ async def batch_rename(client, message):
         await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
         
         batch_data[message.chat.id] = {
-            "start_post_id": start_post_id,
-            "end_post_id": end_post_id,
-            "source_channel_id": source_channel_id,
-            "dest_channel_id": dest_channel_id,
+            "first_post_id": start_post_id,
+            "last_post_id": end_post_id,
+            "source_channel": source_channel_id,
+            "dest_channel": dest_channel_id,
         }
     except Exception as e:
         print(f"Error in batch_rename: {str(e)}")
@@ -137,10 +137,10 @@ async def thumbnail_received(client, message):
         return
     
     data = batch_data.pop(chat_id)
-    start_post_id = data["start_post_id"]
-    end_post_id = data["end_post_id"]
-    source_channel_id = data["source_channel_id"]
-    dest_channel_id = data["dest_channel_id"]
+    start_post_id = data["first_post_id"]
+    end_post_id = data["last_post_id"]
+    source_channel_id = data["source_channel"]
+    dest_channel_id = data["dest_channel"]
     thumbnail_file_id = str(message.photo.file_id)
     
     processed_files = 0  
