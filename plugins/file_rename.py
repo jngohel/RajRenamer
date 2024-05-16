@@ -83,16 +83,21 @@ async def batch_rename(client, message):
         if len(message.command) != 3:
             await message.reply("Usage: /batch start_post_link end_post_link")
             return
+        
         start_post_link = message.command[1]
         end_post_link = message.command[2]
         start_post_id = await extract_post_id(start_post_link)
         end_post_id = await extract_post_id(end_post_link)
+        
         if start_post_id is None or end_post_id is None:
             await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
             return
+        
         source_channel_id = -1002085038189
         dest_channel_id = -1002015035745
+        
         await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+        
         batch_data[message.chat.id] = {
             "start_post_id": start_post_id,
             "end_post_id": end_post_id,
@@ -142,8 +147,10 @@ async def thumbnail_received(client, message):
                 
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 
-                await client.delete_messages(dest_id, copied_message.id)
-                await client.delete_messages(dest_id, copied_message.id + 1)
+                # Ensure the message ID is valid before deleting
+                if copied_message and copied_message.id:
+                    await client.delete_messages(dest_id, copied_message.id)
+                    await client.delete_messages(dest_id, copied_message.id + 1)
                 
                 processed_files += 1
                 await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
