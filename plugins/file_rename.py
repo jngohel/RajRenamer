@@ -142,20 +142,13 @@ async def thumbnail_received(client, message):
                     message_id=post_id
                 )
                 
-                if not copied_message:
-                    raise Exception(f"Failed to copy message {post_id}. Copied message is None.")
-                
                 if copied_message.caption:
                     new_filename = await check_caption(copied_message.caption)
                 else:
-                    new_filename = f"renamed_{post_id}"      
-                
+                    new_filename = f"renamed_{post_id}"  
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
-                
-                # Ensure the message ID is valid before deleting
-                if copied_message and copied_message.id:
-                    await client.delete_messages(dest_id, copied_message.id)
-                    await client.delete_messages(dest_id, copied_message.id + 1)
+                await client.delete_messages(dest_id, copied_message.id)
+                await client.delete_messages(dest_id, copied_message.id + 1)
                 
                 processed_files += 1
                 await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
