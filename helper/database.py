@@ -1,15 +1,16 @@
-from pymongo import MongoClient
+import motor.motor_asyncio
 from config import Config
 from .utils import send_log
 import datetime
 import time
 
-myclient = MongoClient(Config.DB_URL)
-mydb = myclient[Config.DB_NAME]
-usrcol = mydb['users']
-premium = mydb['premium_users']
-
 class Database:
+
+    def __init__(self, uri, database_name):
+        self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        self.db = self._client[database_name]
+        self.col = self.db.user
+        self.users = self.db.uersz
 
     def new_user(self, id):
         return dict(
@@ -18,60 +19,62 @@ class Database:
             caption=None
         )
 
+    async def add_user(self, b, m):
+        u = m.from_user
+        if not await self.is_user_exist(u.id):
+            user = self.new_user(u.id)
+            await self.col.insert_one(user)            
+            await send_log(b, u)
+
     async def is_user_exist(self, id):
-        user = usrcol.find_one({'_id': int(id)})
+        user = await self.col.find_one({'_id': int(id)})
         return bool(user)
 
-    async def add_user(self, b, m):
-        id = m.from_user
-        if not await self.is_user_exist(id.id):
-            user = self.new_user(id.id)
-            usrcol.insert_one(user)            
-            await send_log(b, id)
-
     async def total_users_count(self):
-        count = usrcol.count_documents({})
+        count = await self.col.count_documents({})
         return count
 
     async def get_all_users(self):
-        all_users = usrcol.find({})
+        all_users = self.col.find({})
         return all_users
 
     async def delete_user(self, user_id):
-        usrcol.delete_many({'_id': int(user_id)})
+        await self.col.delete_many({'_id': int(user_id)})
     
     async def set_thumbnail(self, id, file_id):
-        usrcol.update_one({'_id': int(id)}, {'$set': {'file_id': file_id}})
+        await self.col.update_one({'_id': int(id)}, {'$set': {'file_id': file_id}})
 
     async def get_thumbnail(self, id):
-        user = usrcol.find_one({'_id': int(id)})
+        user = await self.col.find_one({'_id': int(id)})
         return user.get('file_id', None)
 
-    def get_user(self, user_id):
-        user_data = premium.find_one({"id": user_id})
+    async def get_user(self, user_id):
+        user_data = await self.users.find_one({"id": user_id})
         return user_data
 
     async def update_user(self, user_data):
-        premium.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
-        user_data = get_user(user_id)
+        user_data = await self.get_user(user_id)
         if user_data:
             expiry_time = user_data.get("expiry_time")
             if expiry_time is None:
+                # User previously used the free trial, but it has ended.
                 return False
             elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
                 return True
             else:
-                premium.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
         return False
     
     async def update_user(self, user_data):
-        await premium.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def update_one(self, filter_query, update_data):
         try:
-            result = premium.update_one(filter_query, update_data)
+            # Assuming self.client and self.users are set up properly
+            result = await self.users.update_one(filter_query, update_data)
             return result.matched_count == 1
         except Exception as e:
             print(f"Error updating document: {e}")
@@ -79,13 +82,13 @@ class Database:
 
     async def get_expired(self, current_time):
         expired_users = []
-        if data := premium.find({"expiry_time": {"$lt": current_time}}):
-            for user in data:
+        if data := self.users.find({"expiry_time": {"$lt": current_time}}):
+            async for user in data:
                 expired_users.append(user)
         return expired_users
 
     async def remove_premium_access(self, user_id):
-        return await premium.update_one(
+        return await self.update_one(
             {"id": user_id}, {"$set": {"expiry_time": None}}
             )
 
@@ -103,8 +106,4 @@ class Database:
         else:
             usrcol.insert_one({'id': int(id), 'is_video': enable})
 
-db = Database()
-
-
-
-
+db = Database(Config.DB_URL, Config.DB_NAME)
