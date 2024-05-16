@@ -96,8 +96,8 @@ async def batch_rename(client, message):
             await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
             return
         
-        source_channel_id = -1002085038189
-        dest_channel_id = -1002015035745
+        source_channel_id = -1002144064599
+        dest_channel_id = -1002115446460
         
         await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
         
