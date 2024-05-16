@@ -157,7 +157,7 @@ async def thumbnail_received(client, message):
                 copied_message = await client.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
-                    message_id=post_id
+                    message_ids=post_id
                 )
                 
                 if not copied_message:
