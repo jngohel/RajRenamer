@@ -17,8 +17,11 @@ from helper.utils import progress_for_pyrogram, convert, humanbytes
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, Message
 
 FORWARD_CHANNEL = [-1002101130781, -1002084343343]
-message_queue = asyncio.Queue()
+
+source_channel_id = -1002085038189
+dest_channel_id = -1002015035745
 batch_data = {}
+message_queue = asyncio.Queue()
 
 async def check_caption(caption):
     caption = re.sub(r'@\w+\b', '', caption)
@@ -45,7 +48,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
     duration = 0
     if message.video or message.document:
         metadata = extractMetadata(createParser(download_path))
-        if metadata.has("duration"):
+        if metadata and metadata.has("duration"):
             duration = metadata.get('duration').seconds
     
     thumb_path = None
@@ -56,9 +59,9 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             img.save(thumb_path, "JPEG")
     
     try:
-        if db.get_mode_status(user_id):
+        if await db.get_mode_status(user_id):
             await bot.send_video(
-                chat_id=message.chat.id,
+                chat_id=dest_channel_id,
                 video=download_path,
                 thumb=thumb_path,
                 caption=new_filename,
@@ -66,7 +69,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             )
         else:
             await bot.send_document(
-                chat_id=message.chat.id,
+                chat_id=dest_channel_id,
                 document=download_path,
                 thumb=thumb_path,
                 caption=new_filename
@@ -79,6 +82,24 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             os.remove(download_path)
         if thumb_path and os.path.exists(thumb_path):
             os.remove(thumb_path)
+
+@Client.on_message(filters.channel & filters.chat(source_channel_id))
+async def auto_rename_and_forward(client, message):
+    try:
+        thumbnail_file_id = await db.get_thumbnail()  # Get the thumbnail file ID from the database
+        if not thumbnail_file_id:
+            await message.reply_text("No thumbnail found in the database.")
+            return
+        
+        if message.caption:
+            new_filename = await check_caption(message.caption)
+        else:
+            new_filename = f"renamed_{message.message_id}"
+        
+        await rename_and_upload(client, message, thumbnail_file_id, new_filename)
+    except Exception as e:
+        print(f"Error in auto_rename_and_forward: {str(e)}")
+        await message.reply_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
@@ -95,9 +116,6 @@ async def batch_rename(client, message):
         if start_post_id is None or end_post_id is None:
             await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
             return
-        
-        source_channel_id = -1002144064599
-        dest_channel_id = -1002115446460
         
         await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
         
@@ -141,6 +159,9 @@ async def thumbnail_received(client, message):
                     from_chat_id=source_id,
                     message_id=post_id
                 )
+                
+                if not copied_message:
+                    raise Exception(f"Failed to copy message {post_id}")
                 
                 if copied_message.caption:
                     new_filename = await check_caption(copied_message.caption)
