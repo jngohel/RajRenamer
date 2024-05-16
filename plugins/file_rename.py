@@ -164,8 +164,6 @@ async def thumbnail_received(client, message):
                 else:
                     new_filename = f"renamed_{post_id}"  
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
-                await client.delete_messages(dest_id, copied_message.id)
-                await client.delete_messages(dest_id, copied_message.id + 1)
                 
                 processed_files += 1
                 await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
