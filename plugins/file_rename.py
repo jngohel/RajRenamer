@@ -157,12 +157,8 @@ async def thumbnail_received(client, message):
                 copied_message = await client.copy_message(
                     chat_id=dest_id,
                     from_chat_id=source_id,
-                    message_ids=post_id
+                    message_id=post_id
                 )
-                
-                if not copied_message:
-                    raise Exception(f"Failed to copy message {post_id}")
-                
                 if copied_message.caption:
                     new_filename = await check_caption(copied_message.caption)
                 else:
