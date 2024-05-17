@@ -136,7 +136,7 @@ async def thumbnail_received(client, message):
 
             try:
                 original_message = await client.get_messages(chat_id=source_id, message_ids=post_id)
-                if not original_message:
+                if original_message is None:
                     await message.reply_text(f"Post {post_id} not found.")
                     return
 
