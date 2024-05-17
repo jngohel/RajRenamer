@@ -147,12 +147,7 @@ async def thumbnail_received(client, message):
 
         await message.reply_text("Renaming completed...")
     except Exception as e:
-                await message.reply_text(f"Error processing post {post_id}: {str(e)}")
-
-        await message.reply_text("Renaming completed...")
-    except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
-
 
 #@Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
