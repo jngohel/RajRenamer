@@ -60,7 +60,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             img.save(thumb_path, "JPEG")
 
     try:
-        if await db.get_mode_status(user_id):
+        if message.video:
             await bot.send_video(
                 chat_id=dest_channel_id,
                 video=download_path,
