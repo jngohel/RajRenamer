@@ -136,13 +136,17 @@ async def thumbnail_received(client, message):
 
             try:
                 original_message = await client.get_messages(chat_id=source_id, message_ids=post_id)
-		if original_message is None:
-		    await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
-		    return
-                new_filename = f"renamed_{post_id}"
+                if not original_message:
+                    await message.reply_text(f"Post {post_id} not found.")
+                    return
 
+                new_filename = f"Renamed_File_{post_id}"
                 await rename_and_upload(client, original_message, thumbnail_file_id, new_filename)
             except Exception as e:
+                await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+
+        await message.reply_text("Renaming completed...")
+    except Exception as e:
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
 
         await message.reply_text("Renaming completed...")
