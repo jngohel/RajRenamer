@@ -104,13 +104,12 @@ async def auto_rename_and_forward(client, message):
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     try:
-        if len(message.command) != 3:
+        links = message.text.strip().split(" ")
+        if len(links) != 3:
             await message.reply("Usage: /batch start_post_link end_post_link")
             return
-	links = message.text.strip().split(" ")
-	cmd, start_post_link, end_post_link = links
-       # start_post_link = message.command[1]
-       # end_post_link = message.command[2]
+        cmd, start_post_link, end_post_link = links
+
         start_post_id = await extract_post_id(start_post_link)
         end_post_id = await extract_post_id(end_post_link)
         
