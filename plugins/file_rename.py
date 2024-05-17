@@ -36,6 +36,7 @@ async def check_caption(caption):
 
 async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filename):
     file_path = f"downloads/{new_filename}"
+    user_id = message.from_user.id
     file = message.document or message.video
     status_message = await message.reply_text("Renaming this file...")
 
@@ -59,7 +60,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             img.save(thumb_path, "JPEG")
 
     try:
-        if message.video:
+        if await db.get_mode_status(user_id):
             await bot.send_video(
                 chat_id=dest_channel_id,
                 video=download_path,
@@ -135,7 +136,10 @@ async def thumbnail_received(client, message):
 
             try:
                 original_message = await client.get_messages(chat_id=source_id, message_ids=post_id)
-                new_filename = f"Renamed_File_{post_id}"
+                if original_message.caption:
+                    new_filename = await check_caption(original_message.caption)
+                else:
+                    new_filename = f"renamed_{post_id}"
 
                 await rename_and_upload(client, original_message, thumbnail_file_id, new_filename)
             except Exception as e:
