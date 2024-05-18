@@ -44,21 +44,18 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
         download_path = await bot.download_media(message=file, file_name=file_path)
     except Exception as e:
         await status_message.edit(f"Error during download: {str(e)}")
-        return
-    
+        return    
     duration = 0
     if message.video or message.document:
         metadata = extractMetadata(createParser(download_path))
         if metadata and metadata.has("duration"):
-            duration = metadata.get('duration').seconds
-    
+            duration = metadata.get('duration').seconds    
     thumb_path = None
     if thumbnail_file_id:
         thumb_path = await bot.download_media(thumbnail_file_id)
         with Image.open(thumb_path) as img:
             img = img.convert("RGB")
-            img.save(thumb_path, "JPEG")
-    
+            img.save(thumb_path, "JPEG")    
     try:
         if await db.get_mode_status(user_id):
             await bot.send_video(
@@ -118,17 +115,14 @@ async def thumbnail_received(client, message):
     end_post_id = data["end_post_id"]
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
-    thumbnail_file_id = str(message.photo.file_id)
-    
+    thumbnail_file_id = str(message.photo.file_id)    
     processed_files = 0
     total_files = end_post_id - start_post_id + 1
     failed_posts = []
-    status_message = await message.reply_text(f"Renaming started... 0/{total_files}")
-    
+    status_message = await message.reply_text(f"Renaming started... <code>0/{total_files}</code>")    
     try:
         for post_id in range(start_post_id, end_post_id + 1):
-            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
-        
+            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))        
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
             try:
@@ -137,27 +131,23 @@ async def thumbnail_received(client, message):
                     from_chat_id=source_id,
                     message_id=post_id
                 )
-                new_filename = await check_caption(copied_message.caption) if copied_message.caption else f"renamed_{post_id}"
-                
+                new_filename = await check_caption(copied_message.caption) if copied_message.caption else f"renamed_{post_id}"                
                 copied_message.from_user = message.from_user
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
-                await client.delete_messages(dest_id, copied_message.id + 1)
-                
+                await client.delete_messages(dest_id, copied_message.id + 1)      
                 processed_files += 1
-                await status_message.edit_text(f"Renaming in progress: {processed_files}/{total_files}")               
+                await status_message.edit_text(f"Renaming in progress: <code>{processed_files}/{total_files}</code>")               
             except Exception as e:
                 error_message = f"Error processing post {post_id}: {str(e)}"
-                failed_posts.append((post_id, str(e)))
-        
+                failed_posts.append((post_id, str(e)))        
         if failed_posts:
             failed_summary = "\n".join([f"Post {post_id}: {error}" for post_id, error in failed_posts])
-            await status_message.edit_text(f"Renaming completed: {processed_files}/{total_files}\nTotal Failed posts: {len(failed_posts)}\n{failed_summary}")
+            await status_message.edit_text(f"Renaming completed: {processed_files}/{total_files}\n\nTotal Failed posts: <code>{len(failed_posts)}</code>\n{failed_summary}")
         else:
             await status_message.edit_text("Renaming completed successfully.")
     except Exception as e:
         error_message = f"Error in thumbnail_received: {str(e)}"
-        print(error_message)
         await status_message.edit_text(error_message)
 
 @Client.on_message(filters.private & filters.command(["rename_all"]))
