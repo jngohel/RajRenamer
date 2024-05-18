@@ -85,8 +85,9 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
 
 @Client.on_message(filters.chat(source_channel_id) & (filters.document | filters.video))
 async def file_received(client, message):
+    new_filename = await check_caption(message.caption)
     thumbnail = "https://graph.org/file/f6d7cf891977840343f09.jpg"
-    await rename_and_upload(client, message, thumbnail)
+    await rename_and_upload(client, message, thumbnail, new_filename)
 
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
