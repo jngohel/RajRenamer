@@ -113,7 +113,7 @@ async def thumbnail_received(client, message):
         await message.reply_text("No batch data found. Please start a batch operation first.")
         return
     btn = [[
-	InlineKeyboardButton('CANCEL', callback_data='cancel_process')
+	InlineKeyboardButton('CANCEL', callback_data='aks_d')
     ]]
     reply_markup = InlineKeyboardMarkup(btn)
     data = batch_data.pop(chat_id)
@@ -320,7 +320,7 @@ async def cancel(bot, update):
     except:
         return
 
-@Client.on_callback_query(filters.regex("cancel_process"))
+@Client.on_callback_query(filters.regex("aks_d"))
 async def cancel_button(client, query):
     await query.message.edit_text("Cancelling...")
     message_queue.clear()
