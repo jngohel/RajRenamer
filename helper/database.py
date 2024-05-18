@@ -90,7 +90,7 @@ class Database:
             )
 
     async def get_mode_status(self, id):
-        user = usrcol.find_one({'id': id})
+        user = usrcol.find_one({'_id': id})
         if user and user.get('is_video'):
             return user['is_video']
         else:
