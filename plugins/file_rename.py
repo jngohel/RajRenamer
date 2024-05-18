@@ -322,10 +322,8 @@ async def cancel(bot, update):
 
 @Client.on_callback_query(filters.regex("cancel_process"))
 async def cancel_button(client, query):
-    global message_queue
-    await query.answer()  # Acknowledge the query to avoid "query is too old" error
     await query.message.edit_text("Cancelling...")
-    message_queue = asyncio.Queue()  # Clear the queue by reinitializing it
+    message_queue.clear()
     await query.message.edit_text("Renaming cancelled.")
     await query.message.edit_reply_markup(reply_markup=None)
 
