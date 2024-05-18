@@ -53,7 +53,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
             duration = metadata.get('duration').seconds
     
     thumb_path = None
-    if message.video and thumbnail_file_id:
+    if thumbnail_file_id:
         thumb_path = await bot.download_media(thumbnail_file_id)
         with Image.open(thumb_path) as img:
             img = img.convert("RGB")
