@@ -18,8 +18,8 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceRepl
 
 FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 
-source_channel_id = -1002085038189
-dest_channel_id = -1002015035745
+source_channel_id = Config.SOURCE_CHANNEL_ID
+dest_channel_id = Config.DEST_CHANNEL_ID
 batch_data = {}
 message_queue = asyncio.Queue()
 
