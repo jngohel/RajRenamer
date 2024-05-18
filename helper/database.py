@@ -90,17 +90,16 @@ class Database:
             )
 
     async def get_mode_status(self, id):
-        user = usrcol.find_one({'_id': id})
-        if user and user.get('is_video'):
+        user = await usrcol.find_one({'_id': id})
+        if user and 'is_video' in user:
             return user['is_video']
-        else:
-            return Config.IS_VIDEO_MODE
+        return Config.IS_VIDEO_MODE
 
     async def update_mode_status(self, id, enable):
-        user = usrcol.find_one({'_id': int(id)})
+        user = await usrcol.find_one({'_id': int(id)})
         if user:
-            usrcol.update_one({'_id': int(id)}, {'$set': {'is_video': enable}})
+            await usrcol.update_one({'_id': int(id)}, {'$set': {'is_video': enable}})
         else:
-            usrcol.insert_one({'_id': int(id), 'is_video': enable})
+            await usrcol.insert_one({'_id': int(id), 'is_video': enable})
 
 db = Database()
