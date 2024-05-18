@@ -86,6 +86,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
 @Client.on_message(filters.chat(source_channel_id) & (filters.document | filters.video))
 async def file_received(client, message):
     thumbnail_file_id = await db.get_thumbnail(message.from_user.id)
+    message.from_user = message.from_user
     await rename_and_upload(client, message, thumbnail_file_id)
 
 @Client.on_message(filters.private & filters.command(["batch"]))
