@@ -24,8 +24,9 @@ batch_data = {}
 message_queue = asyncio.Queue()
 
 async def check_caption(caption):
-    caption = re.sub(r'@\w+\b', '', caption)
-    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
+    caption = re.sub(r'@\w+\b', '', caption)  # Remove mentions
+    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)  # Remove URLs
+    caption = re.sub(r'#\w+\b', '', caption)  # Remove hashtags
     return caption.strip()
 
 async def extract_post_id(link):
@@ -322,10 +323,8 @@ async def cancel(bot, update):
 
 @Client.on_callback_query(filters.regex("aks_d"))
 async def cancel_button(client, query):
-    await query.message.edit_text("Cancelling...")
-    message_queue.clear()
+    message_queue = asyncio.Queue()
     await query.message.edit_text("Renaming cancelled.")
-    await query.message.edit_reply_markup(reply_markup=None)
-
+    
 
 	    
