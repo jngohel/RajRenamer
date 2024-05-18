@@ -11,9 +11,13 @@ class Config(object):
     ADMIN       = [int(admin) if id_pattern.search(admin) else admin for admin in os.environ.get('ADMIN', '1030335104').split()]
     FORCE_SUB   = os.environ.get("FORCE_SUB", "Aksbackup") 
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001769642119"))
-    IS_VIDEO_MODE = False
     WEBHOOK = bool(os.environ.get("WEBHOOK", True))   
 
+    #this 3 vars is for auto renaming
+    IS_VIDEO_MODE = True
+    DEST_CHANNEL_ID = int(os.environ.get("DEST_CHANNEL_ID", "-1002015035745"))
+    SOURCE_CHANNEL_ID = int(os.environ.get("SOURCE_CHANNEL_ID", "-1002085038189"))
+    
 class Txt(object):
     # part of text configuration
     START_TXT = """<i>ᴛʜɪs ɪs ᴀɴ ᴀᴅᴠᴀɴᴄᴇᴅ & ᴘᴏᴡᴇʀꜰᴜʟ ʀᴇɴᴀᴍᴇ ʙᴏᴛ, ᴜsɪɴɢ ᴛʜɪs ʙᴏᴛ ʏᴏᴜ ᴄᴀɴ ʀᴇɴᴀᴍᴇ & ᴄʜᴀɴɢᴇ ᴛʜᴜᴍʙɴᴀɪʟ ᴏꜰ ʏᴏᴜʀ ꜰɪʟᴇ, ᴊᴜsᴛ sᴇɴᴛ ᴍᴇ ᴀɴʏ ᴛᴇʟᴇɢʀᴀᴍ ᴅᴏᴄᴜᴍᴇɴᴛ, ᴠɪᴅᴇᴏ ᴀɴᴅ ᴇɴᴛᴇʀ ɴᴇᴡ ꜰɪʟᴇ ɴᴀᴍᴇ ᴛᴏ ʀᴇɴᴀᴍᴇ ɪᴛ</i>"""
