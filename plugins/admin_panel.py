@@ -21,10 +21,10 @@ async def set_mode(client, message):
         return await message.reply_text("<b>💔 Please specify 'on' or 'off' after the command.</b>")
     if option in ['on', 'true']:
         await db.update_mode_status(user_id, enable=True)
-        await message.reply_text("<b>✅️ ᴘᴍ ꜱᴇᴀʀᴄʜ ᴇɴᴀʙʟᴇᴅ ꜰʀᴏᴍ ɴᴏᴡ ᴜꜱᴇʀꜱ ᴀʙʟᴇ ᴛᴏ ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ ɪɴ ʙᴏᴛ ᴘᴍ.</b>")
+        await message.reply_text("<b>🎬 ɴᴏᴡ ʙᴏᴛ ʀᴇɴᴀᴍɪɴɢ ɪɴ ᴠɪᴅᴇᴏ ꜰᴏʀᴍᴀᴛ.</b>")
     elif option in ['off', 'false']:
         await db.update_mode_status(user_id, enable=False)
-        await message.reply_text("<b>❌️ ᴘᴍ ꜱᴇᴀʀᴄʜ ᴅɪꜱᴀʙʟᴇᴅ, ɴᴏ ᴏɴᴇ ᴜꜱᴇʀꜱ ᴀʙʟᴇ ᴛᴏ ꜱᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ ɪɴ ʙᴏᴛ ᴘᴍ.</b>")
+        await message.reply_text("<b>📚 ɴᴏᴡ ʙᴏᴛ ʀᴇɴᴀᴍɪɴɢ ɪɴ ᴅᴏᴄᴜᴍᴇɴᴛ ꜰᴏʀᴍᴀᴛ.</b>")
     else:
         await message.reply_text("<b>💔 Invalid option. Please specify 'on' or 'off' after the command.</b>")
      
