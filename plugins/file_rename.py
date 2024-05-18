@@ -83,12 +83,6 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
         if thumb_path and os.path.exists(thumb_path):
             os.remove(thumb_path)
 
-@Client.on_message(filters.chat(source_channel_id) & (filters.document | filters.video))
-async def file_received(client, message):
-    new_filename = await check_caption(message.caption)
-    thumbnail = "https://graph.org/file/f6d7cf891977840343f09.jpg"
-    await rename_and_upload(client, message, thumbnail, new_filename)
-
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     try:
@@ -118,7 +112,10 @@ async def thumbnail_received(client, message):
     if chat_id not in batch_data:
         await message.reply_text("No batch data found. Please start a batch operation first.")
         return
-    
+    btn = [[
+	InlineKeyboardButton('CANCEL', callback_data='cancel_process')
+    ]]
+    reply_markup = InlineKeyboardMarkup(btn)
     data = batch_data.pop(chat_id)
     start_post_id = data["start_post_id"]
     end_post_id = data["end_post_id"]
@@ -129,7 +126,7 @@ async def thumbnail_received(client, message):
     processed_files = 0
     total_files = end_post_id - start_post_id + 1
     failed_posts = []
-    status_message = await message.reply_text(f"Renaming started... 0/{total_files}")
+    status_message = await message.reply_text(f"Renaming started... 0/{total_files}", reply_markup=reply_markup)
     
     try:
         for post_id in range(start_post_id, end_post_id + 1):
@@ -150,7 +147,7 @@ async def thumbnail_received(client, message):
                 await client.delete_messages(dest_id, copied_message.id + 1)
                 
                 processed_files += 1
-                await status_message.edit_text(f"Renaming in progress: {processed_files}/{total_files}")               
+                await status_message.edit_text(f"Renaming in progress: {processed_files}/{total_files}", reply_markup=reply_markup)               
             except Exception as e:
                 error_message = f"Error processing post {post_id}: {str(e)}"
                 failed_posts.append((post_id, str(e)))
@@ -323,6 +320,14 @@ async def cancel(bot, update):
     except:
         return
 
+@Client.on_callback_query(filters.regex("cancel_process"))
+async def cancel_button(client, query):
+    global message_queue
+    await query.answer()  # Acknowledge the query to avoid "query is too old" error
+    await query.message.edit_text("Cancelling...")
+    message_queue = asyncio.Queue()  # Clear the queue by reinitializing it
+    await query.message.edit_text("Renaming cancelled.")
+    await query.message.edit_reply_markup(reply_markup=None)
 
 
 	    
