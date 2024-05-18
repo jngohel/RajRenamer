@@ -85,7 +85,7 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
 
 @Client.on_message(filters.chat(source_channel_id) & (filters.document | filters.video))
 async def file_received(client, message):
-    user_id = message.from_user.id if message.from_user else 0
+    user_id = message.from_user.id if message.from_user else None
     thumbnail_file_id = await db.get_thumbnail(user_id)
     await rename_and_upload(client, message, thumbnail_file_id)
 
