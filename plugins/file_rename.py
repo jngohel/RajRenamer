@@ -20,8 +20,13 @@ FORWARD_CHANNEL = [-1002101130781, -1002084343343]
 
 source_channel_id = -1002085038189
 dest_channel_id = -1002015035745
-message_queue = asyncio.Queue()
 batch_data = {}
+message_queue = asyncio.Queue()
+
+async def check_caption(caption):
+    caption = re.sub(r'@\w+\b', '', caption)
+    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
+    return caption.strip()
 
 async def extract_post_id(link):
     match = re.search(r"/(\d+)/?$", link)
@@ -29,38 +34,32 @@ async def extract_post_id(link):
         return int(match.group(1))
     return None
 
-async def check_caption(caption):
-    caption = re.sub(r'@\w+\b', '', caption)
-    caption = re.sub(r'http[s]?:\/\/\S+', '', caption)
-    return caption.strip()
-
 async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filename):
     file_path = f"downloads/{new_filename}"
-    user_id = message.from_user.id
     file = message.document or message.video
+    user_id = message.from_user.id
     status_message = await message.reply_text("Renaming this file...")
-
     try:
         download_path = await bot.download_media(message=file, file_name=file_path)
     except Exception as e:
         await status_message.edit(f"Error during download: {str(e)}")
         return
-
+    
     duration = 0
     if message.video or message.document:
         metadata = extractMetadata(createParser(download_path))
         if metadata and metadata.has("duration"):
             duration = metadata.get('duration').seconds
-
+    
     thumb_path = None
     if message.video and thumbnail_file_id:
         thumb_path = await bot.download_media(thumbnail_file_id)
         with Image.open(thumb_path) as img:
             img = img.convert("RGB")
             img.save(thumb_path, "JPEG")
-
+    
     try:
-        if message.video:
+        if await db.get_mode_status(user_id):
             await bot.send_video(
                 chat_id=dest_channel_id,
                 video=download_path,
@@ -84,38 +83,57 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
         if thumb_path and os.path.exists(thumb_path):
             os.remove(thumb_path)
 
+@Client.on_message(filters.channel & filters.chat(source_channel_id))
+async def auto_rename_and_forward(client, message):
+    try:
+        thumbnail_file_id = await db.get_thumbnail(message.from_user.id)
+        if not thumbnail_file_id:
+            await message.reply_text("No thumbnail found in the database.")
+            return
+        
+        if message.caption:
+            new_filename = await check_caption(message.caption)
+        else:
+            new_filename = f"renamed_{message.message_id}"
+        
+        await rename_and_upload(client, message, thumbnail_file_id, new_filename)
+    except Exception as e:
+        print(f"Error in auto_rename_and_forward: {str(e)}")
+        await message.reply_text(f"Error: {str(e)}")
+
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
-    if len(message.command) != 3:
-        await message.reply("Usage: /batch start_post_link end_post_link")
-        return
-
-    start_post_link = message.command[1]
-    end_post_link = message.command[2]
-
-    start_post_id = await extract_post_id(start_post_link)
-    end_post_id = await extract_post_id(end_post_link)
-
-    if start_post_id is None or end_post_id is None:
-        await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
-        return
-
-    batch_data[message.chat.id] = {
-        "start_post_id": start_post_id,
-        "end_post_id": end_post_id,
-        "source_channel_id": source_channel_id,
-        "dest_channel_id": dest_channel_id,
-    }
-
-    await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+    try:
+        if len(message.command) != 3:
+            await message.reply("Usage: /batch start_post_link end_post_link")
+            return
+        
+        start_post_link = message.command[1]
+        end_post_link = message.command[2]
+        start_post_id = await extract_post_id(start_post_link)
+        end_post_id = await extract_post_id(end_post_link)
+        
+        if start_post_id is None or end_post_id is None:
+            await message.reply("Invalid post links provided. Usage: /batch start_post_link end_post_link")
+            return
+        
+        await message.reply_text("Please provide a thumbnail image for the batch. Send a photo.")
+        
+        batch_data[message.chat.id] = {
+            "start_post_id": start_post_id,
+            "end_post_id": end_post_id,
+            "source_channel_id": source_channel_id,
+            "dest_channel_id": dest_channel_id,
+        }
+    except Exception as e:
+        print(f"Error in batch_rename: {str(e)}")
+        await message.reply_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
 async def thumbnail_received(client, message):
     chat_id = message.chat.id
     if chat_id not in batch_data:
-        file_id = str(message.photo.file_id)
-        # Implement thumbnail saving logic if necessary
-        await message.reply_text("**Your Custom Thumbnail Saved Successfully ☑️**")
+        await message.reply_text("No batch data found. Please start a batch operation first.")
         return
     
     data = batch_data.pop(chat_id)
@@ -124,31 +142,65 @@ async def thumbnail_received(client, message):
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
     thumbnail_file_id = str(message.photo.file_id)
-
-    await message.reply_text("Renaming started...")
-
+    
+    processed_files = 0  
+    status_message = await message.reply_text("Renaming started... 0/{}".format(end_post_id - start_post_id + 1))
+    
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
-
+        
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
-
             try:
-                original_message = await client.get_messages(chat_id=source_id, message_ids=post_id)
-                if original_message is None:
-                    await message.reply_text(f"Post {post_id} not found.")
-                    return
-
-                new_filename = f"Renamed_File_{post_id}"
-                await rename_and_upload(client, original_message, thumbnail_file_id, new_filename)
+                print(f"Attempting to copy message {post_id} from {source_id} to {dest_id}")
+                copied_message = await client.copy_message(
+                    chat_id=dest_id,
+                    from_chat_id=source_id,
+                    message_id=post_id
+                )
+                if copied_message.caption:
+                    new_filename = await check_caption(copied_message.caption)
+                else:
+                    new_filename = f"renamed_{post_id}"  
+                await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
+                await client.delete_messages(dest_id, copied_message.id)
+                await client.delete_messages(dest_id, copied_message.id + 1)
+                
+                processed_files += 1
+                await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))
+            
             except Exception as e:
+                print(f"Error processing post {post_id}: {str(e)}")
                 await message.reply_text(f"Error processing post {post_id}: {str(e)}")
+        
+        await status_message.edit_text("Renaming completed...")
+    
+    except Exception as e:
+        print(f"Error in thumbnail_received: {str(e)}")
+        await status_message.edit_text(f"Error: {str(e)}")
 
-        await message.reply_text("Renaming completed...")
+@Client.on_message(filters.private & filters.command(["rename_all"]))
+async def rename_all_posts(client, message):
+    try:
+        if len(message.command) != 2:
+            await message.reply("Usage: /rename_all end_post_link")
+            return
+        end_post_link = message.command[1]
+        end_post_id = await extract_post_id(end_post_link)
+        if end_post_id is None:
+            await message.reply("Invalid post link provided. Usage: /rename_all end_post_link")
+            return
+        await message.reply_text("Please provide a thumbnail image for renaming all posts. Send a photo.")
+        batch_data[message.chat.id] = {
+            "start_post_id": 1,
+            "end_post_id": end_post_id,
+            "source_channel_id": source_channel_id,
+            "dest_channel_id": dest_channel_id
+        }
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
-
+	
 #@Client.on_message(filters.private & (filters.document | filters.video))
 async def rename_start(client, message):
     aks_id = message.from_user.id
@@ -286,3 +338,6 @@ async def cancel(bot, update):
     except:
         return
 
+
+
+	    
