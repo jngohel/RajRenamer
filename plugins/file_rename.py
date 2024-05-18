@@ -95,7 +95,7 @@ async def auto_rename_and_forward(client, message):
         else:
             new_filename = f"renamed_{message.message_id}"
 	message.from_user = message.from_user
-        await rename_and_upload(client, message, thumbnail_file_id, new_filename)
+	await rename_and_upload(client, message, thumbnail_file_id, new_filename)
     except Exception as e:
         print(f"Error in auto_rename_and_forward: {str(e)}")
         await message.reply_text(f"Error: {str(e)}")
