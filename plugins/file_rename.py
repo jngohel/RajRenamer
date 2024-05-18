@@ -145,7 +145,7 @@ async def thumbnail_received(client, message):
     
     processed_files = 0  
     status_message = await message.reply_text("Renaming started... 0/{}".format(end_post_id - start_post_id + 1))
-    
+        
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
@@ -163,6 +163,7 @@ async def thumbnail_received(client, message):
                     new_filename = await check_caption(copied_message.caption)
                 else:
                     new_filename = f"renamed_{post_id}"  
+                copied_message.from_user = message.from_user
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
                 await client.delete_messages(dest_id, copied_message.id + 1)
