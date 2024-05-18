@@ -104,7 +104,6 @@ async def batch_rename(client, message):
             "dest_channel_id": dest_channel_id,
         }
     except Exception as e:
-        print(f"Error in batch_rename: {str(e)}")
         await message.reply_text(f"Error: {str(e)}")
 
 @Client.on_message(filters.private & filters.photo)
@@ -112,18 +111,23 @@ async def thumbnail_received(client, message):
     chat_id = message.chat.id
     if chat_id not in batch_data:
         await message.reply_text("No batch data found. Please start a batch operation first.")
-        return    
+        return
+    
     data = batch_data.pop(chat_id)
     start_post_id = data["start_post_id"]
     end_post_id = data["end_post_id"]
     source_channel_id = data["source_channel_id"]
     dest_channel_id = data["dest_channel_id"]
-    thumbnail_file_id = str(message.photo.file_id)    
-    processed_files = 0  
-    status_message = await message.reply_text("Renaming started... 0/{}".format(end_post_id - start_post_id + 1))        
+    thumbnail_file_id = str(message.photo.file_id)
+    
+    processed_files = 0
+    total_files = end_post_id - start_post_id + 1
+    failed_posts = []
+    status_message = await message.reply_text(f"Renaming started... 0/{total_files}")
+    
     try:
         for post_id in range(start_post_id, end_post_id + 1):
-            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))      
+            await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
             try:
@@ -132,23 +136,28 @@ async def thumbnail_received(client, message):
                     from_chat_id=source_id,
                     message_id=post_id
                 )
-                if copied_message.caption:
-                    new_filename = await check_caption(copied_message.caption)
-                else:
-                    new_filename = f"renamed_{post_id}"  
+                new_filename = await check_caption(copied_message.caption) if copied_message.caption else f"renamed_{post_id}"
+                
                 copied_message.from_user = message.from_user
                 await rename_and_upload(client, copied_message, thumbnail_file_id, new_filename)
                 await client.delete_messages(dest_id, copied_message.id)
-                await client.delete_messages(dest_id, copied_message.id + 1)              
+                await client.delete_messages(dest_id, copied_message.id + 1)
+                
                 processed_files += 1
-                await status_message.edit_text("Renaming in progress: {}/{}".format(processed_files, end_post_id - start_post_id + 1))           
+                await status_message.edit_text(f"Renaming in progress: {processed_files}/{total_files}")               
             except Exception as e:
-                print(f"Error processing post {post_id}: {str(e)}")
-                await message.reply_text(f"Error processing post {post_id}: {str(e)}")        
-        await status_message.edit_text("Renaming completed...")    
+                error_message = f"Error processing post {post_id}: {str(e)}"
+                failed_posts.append((post_id, str(e)))
+        
+        if failed_posts:
+            failed_summary = "\n".join([f"Post {post_id}: {error}" for post_id, error in failed_posts])
+            await status_message.edit_text(f"Renaming completed: {processed_files}/{total_files}\nTotal Failed posts: {len(failed_posts)}\n{failed_summary}")
+        else:
+            await status_message.edit_text("Renaming completed successfully.")
     except Exception as e:
-        print(f"Error in thumbnail_received: {str(e)}")
-        await status_message.edit_text(f"Error: {str(e)}")
+        error_message = f"Error in thumbnail_received: {str(e)}"
+        print(error_message)
+        await status_message.edit_text(error_message)
 
 @Client.on_message(filters.private & filters.command(["rename_all"]))
 async def rename_all_posts(client, message):
