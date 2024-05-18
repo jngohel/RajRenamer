@@ -83,23 +83,6 @@ async def rename_and_upload(bot, message: Message, thumbnail_file_id, new_filena
         if thumb_path and os.path.exists(thumb_path):
             os.remove(thumb_path)
 
-@Client.on_message(filters.channel & filters.chat(source_channel_id))
-async def auto_rename_and_forward(client, message):
-    try:
-        thumbnail_file_id = await db.get_thumbnail(message.from_user.id)
-        if not thumbnail_file_id:
-            await message.reply_text("No thumbnail found in the database.")
-            return        
-        if message.caption:
-            new_filename = await check_caption(message.caption)
-        else:
-            new_filename = f"renamed_{message.message_id}"
-	message.from_user = message.from_user
-	await rename_and_upload(client, message, thumbnail_file_id, new_filename)
-    except Exception as e:
-        print(f"Error in auto_rename_and_forward: {str(e)}")
-        await message.reply_text(f"Error: {str(e)}")
-
 @Client.on_message(filters.private & filters.command(["batch"]))
 async def batch_rename(client, message):
     try:
