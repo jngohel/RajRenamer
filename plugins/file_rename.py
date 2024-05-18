@@ -132,14 +132,14 @@ async def thumbnail_received(client, message):
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
-		
-	async def cancel_button_aks(_, button):
+        
+        async def cancel_button_aks(_, button):
             if button.text == "Cancel":
                 await status_message.edit_text("Cancelling...")
                 message_queue.clear()
                 await status_message.edit_text("Renaming cancelled.")
                 await button.message.edit_reply_markup(reply_markup=None)
-		    
+        
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
             try:
