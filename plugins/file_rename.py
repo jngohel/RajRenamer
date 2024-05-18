@@ -113,10 +113,6 @@ async def thumbnail_received(client, message):
     if chat_id not in batch_data:
         await message.reply_text("No batch data found. Please start a batch operation first.")
         return
-    btn = [[
-	InlineKeyboardButton('CANCEL', callback_data='aks_d')
-    ]]
-    reply_markup = InlineKeyboardMarkup(btn)
     data = batch_data.pop(chat_id)
     start_post_id = data["start_post_id"]
     end_post_id = data["end_post_id"]
@@ -127,18 +123,11 @@ async def thumbnail_received(client, message):
     processed_files = 0
     total_files = end_post_id - start_post_id + 1
     failed_posts = []
-    status_message = await message.reply_text(f"Renaming started... 0/{total_files}", reply_markup=reply_markup)
+    status_message = await message.reply_text(f"Renaming started... 0/{total_files}")
     
     try:
         for post_id in range(start_post_id, end_post_id + 1):
             await message_queue.put((source_channel_id, dest_channel_id, post_id, thumbnail_file_id))
-        
-        async def cancel_button_aks(_, button):
-            if button.text == "Cancel":
-                await status_message.edit_text("Cancelling...")
-                message_queue.clear()
-                await status_message.edit_text("Renaming cancelled.")
-                await button.message.edit_reply_markup(reply_markup=None)
         
         while not message_queue.empty():
             source_id, dest_id, post_id, thumbnail_file_id = await message_queue.get()
@@ -156,7 +145,7 @@ async def thumbnail_received(client, message):
                 await client.delete_messages(dest_id, copied_message.id + 1)
                 
                 processed_files += 1
-                await status_message.edit_text(f"Renaming in progress: {processed_files}/{total_files}", reply_markup=reply_markup)               
+                await status_message.edit_text(f"Renaming in progress: {processed_files}/{total_files}")               
             except Exception as e:
                 error_message = f"Error processing post {post_id}: {str(e)}"
                 failed_posts.append((post_id, str(e)))
@@ -328,9 +317,5 @@ async def cancel(bot, update):
         await update.message.delete()
     except:
         return
-
-@Client.on_callback_query(filters.regex("aks_d"))
-async def aks_d(_, query):
-    await cancel_button_aks(_, query)
 
 	    
